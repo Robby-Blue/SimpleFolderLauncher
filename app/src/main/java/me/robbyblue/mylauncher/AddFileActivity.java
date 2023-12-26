@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
@@ -67,16 +68,27 @@ public class AddFileActivity extends Activity {
         new Thread(() -> {
             PackageManager pm = getPackageManager();
 
-            Intent i = new Intent(Intent.ACTION_MAIN, null);
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
+            Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
+            getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<ResolveInfo> allApps = pm.queryIntentActivities(i, 0);
-            // TODO: maybe sort this later, its being silly right now
+            List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, 0);
             for (ResolveInfo ri : allApps) {
                 apps.add(new AppFile(ri.loadLabel(pm).toString(), ri.activityInfo.packageName));
+                // to lowwer case everything bc by default "s" comes after "Y"
+                Collections.sort(apps, (app1, app2) -> app1.getName().toLowerCase().compareTo(app2.getName().toLowerCase()));
+                // find new index of the added app
+                int index = -1;
+                for(int i = 0;i<apps.size();i++){
+                    if(apps.get(i).getPackageName().equals(ri.activityInfo.packageName)){
+                        index = i;
+                        break;
+                    }
+                }
+                int finalIndex = index;
                 runOnUiThread(() -> {
                     adapter.setApps(apps);
-                    adapter.notifyItemInserted(layoutManager.getItemCount() - 1);
+                    adapter.notifyItemInserted(finalIndex);
+                    recycler.scrollToPosition(0);
                 });
             }
         }).start();
