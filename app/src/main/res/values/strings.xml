@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MyLauncher</string>
+    <string name="selectAppFileButton">App</string>
+    <string name="selectFolderButton">Folder</string>
+    <string name="displayName">Display Name</string>
+    <string name="create">Create</string>
+</resources>

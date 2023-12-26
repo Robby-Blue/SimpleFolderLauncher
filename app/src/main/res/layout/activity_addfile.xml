@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context=".AddFileActivity">
+
+    <EditText
+        android:id="@+id/nameField"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:autofillHints="name"
+        android:hint="@string/displayName"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:lines="1"
+        android:maxLines="1" />
+
+    <GridLayout
+        android:id="@+id/buttonsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/nameField"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:useDefaultMargins="true">
+
+        <Button
+            android:id="@+id/selectAppFileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/default_button_bg"
+            android:text="@string/selectAppFileButton" />
+
+        <Button
+            android:id="@+id/selectFolderButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/default_button_bg"
+            android:text="@string/selectFolderButton" />
+    </GridLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/appRecycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttonsLayout"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="30dp"
+        android:visibility="invisible" />
+
+</RelativeLayout>
