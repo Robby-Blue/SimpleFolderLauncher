@@ -29,6 +29,8 @@ public class AddFileActivity extends Activity {
     ArrayList<AppFile> apps = new ArrayList<>();
     LinearLayoutManager layoutManager;
 
+    EditText nameField;
+
     // TODO: make the ui not look sillily ugly
 
     @Override
@@ -38,6 +40,8 @@ public class AddFileActivity extends Activity {
 
         Intent intent = getIntent();
         parentFolder = intent.getStringExtra("folder");
+
+        nameField = findViewById(R.id.nameField);
 
         Button selectAppFileButton = findViewById(R.id.selectAppFileButton);
         Button selectFolderButton = findViewById(R.id.selectFolderButton);
@@ -93,7 +97,6 @@ public class AddFileActivity extends Activity {
             }
         }).start();
 
-        EditText nameField = findViewById(R.id.nameField);
         nameField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId != EditorInfo.IME_ACTION_DONE)
                 return false;
@@ -128,6 +131,7 @@ public class AddFileActivity extends Activity {
     public void select(int index){
         setBackgrounds(layoutManager, index);
         appPackage = apps.get(index).getPackageName();
+        nameField.setText(apps.get(index).getName());
     }
 
     private void setBackgrounds(LinearLayoutManager layoutManager, int index) {
