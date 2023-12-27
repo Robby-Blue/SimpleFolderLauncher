@@ -24,9 +24,12 @@ public class FileDataStorage {
     Context context;
     File structureFile;
 
+    HashMap<String, ArrayList<FileNode>> files;
+
     public FileDataStorage(Context context) {
         this.context = context;
         structureFile = new File(context.getFilesDir(), "filesstructure.json");
+        this.files = loadFilesStructure();
     }
 
     public HashMap<String, ArrayList<FileNode>> loadFilesStructure() {
@@ -73,7 +76,7 @@ public class FileDataStorage {
         }
     }
 
-    public void storeFilesStructure(HashMap<String, ArrayList<FileNode>> files) {
+    public void storeFilesStructure() {
         try {
             JSONObject jsonData = new JSONObject();
             for (String folderName : files.keySet()) {
@@ -94,7 +97,7 @@ public class FileDataStorage {
                 if (fileNode instanceof AppFile) {
                     fileJson.put("type", "file");
                     fileJson.put("package", ((AppFile) fileNode).getPackageName());
-                }else if (fileNode instanceof Folder){
+                } else if (fileNode instanceof Folder) {
                     fileJson.put("type", "folder");
                 }
                 jsonArray.put(fileJson);
@@ -131,6 +134,39 @@ public class FileDataStorage {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void removeFile(String parentFolder, int fileIndex) {
+        ArrayList<FileNode> contents = getFolderContents(parentFolder);
+        FileNode item = contents.get(fileIndex);
+        if (item instanceof Folder) {
+            // its a folder, remove not just the reference but also the folder itself
+            files.remove(((Folder) item).getFullPath());
+        }
+        contents.remove(fileIndex);
+        storeFilesStructure();
+    }
+
+    public void createFile(String parentFolder, AppFile appFile) {
+        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
+        parentFolderContents.add(appFile);
+        storeFilesStructure();
+    }
+
+    public void createFolder(String parentFolder, String name) {
+        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
+        String fullPath = parentFolder + "/" + name;
+        if (files.containsKey(fullPath))
+            return;
+        parentFolderContents.add(new Folder(name, fullPath));
+        files.put(fullPath, new ArrayList<>());
+        storeFilesStructure();
+    }
+
+    public ArrayList<FileNode> getFolderContents(String folder) {
+        if (files.containsKey(folder))
+            return files.get(folder);
+        return new ArrayList<>();
     }
 
 }

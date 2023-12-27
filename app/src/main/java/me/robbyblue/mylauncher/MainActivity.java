@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView folderPathView;
     RecyclerView recycler;
-    HashMap<String, ArrayList<FileNode>> files;
     String currentFolder;
     int longClickedId;
 
@@ -46,21 +45,11 @@ public class MainActivity extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         String appPackage = intent.getStringExtra("package");
 
-        ArrayList<FileNode> parentFolderContents = files.get(parentFolder);
-
-        if (parentFolderContents == null)
-            return;
-
         if (selectedType == FileType.APPFILE) {
-            parentFolderContents.add(new AppFile(name, appPackage));
+            dataStorage.createFile(parentFolder, new AppFile(name, appPackage));
         } else if (selectedType == FileType.FOLDER) {
-            String fullPath = parentFolder + "/" + name;
-            if (files.containsKey(fullPath))
-                return;
-            parentFolderContents.add(new Folder(name, fullPath));
-            files.put(fullPath, new ArrayList<>());
+            dataStorage.createFolder(parentFolder, name);
         }
-        dataStorage.storeFilesStructure(files);
         showFolder(parentFolder);
     });
 
@@ -70,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dataStorage = new FileDataStorage(this);
-        files = dataStorage.loadFilesStructure();
 
         folderPathView = findViewById(R.id.folderPath);
         recycler = findViewById(R.id.appRecycler);
@@ -104,16 +92,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.actionDelete){
-            ArrayList<FileNode> contents = files.get(currentFolder);
-            if (contents == null)
-                return true;
-            contents.remove(longClickedId);
-            dataStorage.storeFilesStructure(files);
+            dataStorage.removeFile(currentFolder, longClickedId);
             showFolder(currentFolder);
-            // TODO: refactor this
-            // probably move everything (both file adding and removing for now) to FileDataStorage
-            // also make it work fully for folders, dont just delete the reference to the folder
-            // but the folder itself too
         }
         return true;
     }
@@ -126,11 +106,7 @@ public class MainActivity extends AppCompatActivity {
         currentFolder = folder;
         folderPathView.setText(folder);
 
-        ArrayList<FileNode> contents = files.get(folder);
-
-        if (contents == null)
-            return;
-
+        ArrayList<FileNode> contents = dataStorage.getFolderContents(folder);
         ArrayList<FileNode> displayFiles = new ArrayList<>(contents);
 
         if (!folder.equals("~")) {
