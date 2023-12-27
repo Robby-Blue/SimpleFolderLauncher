@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
@@ -79,7 +80,7 @@ public class AddFileActivity extends Activity {
             for (ResolveInfo ri : allApps) {
                 apps.add(new AppFile(ri.loadLabel(pm).toString(), ri.activityInfo.packageName));
                 // to lowwer case everything bc by default "s" comes after "Y"
-                Collections.sort(apps, (app1, app2) -> app1.getName().toLowerCase().compareTo(app2.getName().toLowerCase()));
+                apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
                 // find new index of the added app
                 int index = -1;
                 for(int i = 0;i<apps.size();i++){

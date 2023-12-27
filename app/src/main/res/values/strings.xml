@@ -4,4 +4,5 @@
     <string name="selectFolderButton">Folder</string>
     <string name="displayName">Display Name</string>
     <string name="create">Create</string>
+    <string name="actionDelete">Delete</string>
 </resources>

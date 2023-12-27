@@ -9,6 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recycler;
     HashMap<String, ArrayList<FileNode>> files;
     String currentFolder;
+    int longClickedId;
 
     FileDataStorage dataStorage;
 
@@ -72,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         recycler.setLayoutManager(new LinearLayoutManager(this));
         showFolder("~");
 
+        registerForContextMenu(recycler);
+
         findViewById(R.id.addFileButton).setOnClickListener(view -> {
             Intent intent = new Intent(this, AddFileActivity.class);
             intent.putExtra("folder", currentFolder);
@@ -85,6 +92,30 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.fileaction_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.actionDelete){
+            ArrayList<FileNode> contents = files.get(currentFolder);
+            if (contents == null)
+                return true;
+            contents.remove(longClickedId);
+            dataStorage.storeFilesStructure(files);
+            showFolder(currentFolder);
+            // TODO: refactor this
+            // probably move everything (both file adding and removing for now) to FileDataStorage
+            // also make it work fully for folders, dont just delete the reference to the folder
+            // but the folder itself too
+        }
+        return true;
     }
 
     public void showFolder(String folder) {
@@ -108,6 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
         FileAdapter adapter = new FileAdapter(this, displayFiles);
         recycler.setAdapter(adapter);
+    }
+
+    public void setLongClickedID(int position) {
+        this.longClickedId = position;
     }
 
 }

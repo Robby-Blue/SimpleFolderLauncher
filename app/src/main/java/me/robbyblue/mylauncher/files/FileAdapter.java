@@ -60,6 +60,14 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
                 new Handler(Looper.getMainLooper()).postDelayed(() -> activity.showFolder("~"), 1000);
             }
         });
+
+        holder.view.setOnLongClickListener((v) -> {
+            if(file.getName().equals(".."))
+                return false;
+            activity.setLongClickedID(position);
+            v.showContextMenu(0, 0);
+            return true;
+        });
     }
 
     @Override
