@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">MyLauncher</string>
     <string name="selectAppFileButton">App</string>
-    <string name="selectFolderButton">Folder</string>
-    <string name="displayName">Display Name</string>
+    <string name="select_folder_button">Folder</string>
+    <string name="display_name">Display Name</string>
     <string name="create">Create</string>
-    <string name="actionDelete">Delete</string>
-    <string name="actionMoveUp">Move Up</string>
-    <string name="actionMoveDown">Move Down</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_move_up">Move Up</string>
+    <string name="action_move_down">Move Down</string>
 </resources>

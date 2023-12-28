@@ -59,14 +59,14 @@ public class MainActivity extends AppCompatActivity {
 
         dataStorage = new FileDataStorage(this);
 
-        folderPathView = findViewById(R.id.folderPath);
-        recycler = findViewById(R.id.appRecycler);
+        folderPathView = findViewById(R.id.folder_path_text);
+        recycler = findViewById(R.id.app_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
         showFolder("~");
 
         registerForContextMenu(recycler);
 
-        findViewById(R.id.addFileButton).setOnClickListener(view -> {
+        findViewById(R.id.add_file_button).setOnClickListener(view -> {
             Intent intent = new Intent(this, AddFileActivity.class);
             intent.putExtra("folder", currentFolder);
             register.launch(intent);
@@ -90,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.actionDelete)
+        if (item.getItemId() == R.id.action_delete)
             dataStorage.removeFile(currentFolder, longClickedId);
-        if (item.getItemId() == R.id.actionMoveUp)
+        if (item.getItemId() == R.id.action_move_up)
             dataStorage.moveFile(currentFolder, longClickedId, longClickedId - 1);
-        if (item.getItemId() == R.id.actionMoveDown)
+        if (item.getItemId() == R.id.action_move_down)
             dataStorage.moveFile(currentFolder, longClickedId, longClickedId + 1);
         showFolder(currentFolder);
         return true;

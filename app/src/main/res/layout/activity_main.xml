@@ -7,24 +7,24 @@
     android:fitsSystemWindows="false">
 
     <Button
-        android:id="@+id/addFileButton"
+        android:id="@+id/add_file_button"
         android:layout_height="80dp"
         android:layout_width="80dp"
         android:background="@android:color/transparent"
         android:layout_alignParentEnd="true"/>
 
     <TextView
-        android:id="@+id/folderPath"
+        android:id="@+id/folder_path_text"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/addFileButton"
+        android:layout_toStartOf="@id/add_file_button"
         android:textColor="@color/white"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/appRecycler"
+        android:id="@+id/app_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"

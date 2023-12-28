@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/actionDelete"
-        android:title="@string/actionDelete" />
+        android:id="@+id/action_delete"
+        android:title="@string/action_delete" />
     <item
-        android:id="@+id/actionMoveUp"
-        android:title="@string/actionMoveUp" />
+        android:id="@+id/action_move_up"
+        android:title="@string/action_move_up" />
     <item
-        android:id="@+id/actionMoveDown"
-        android:title="@string/actionMoveDown" />
+        android:id="@+id/action_move_down"
+        android:title="@string/action_move_down" />
 </menu>

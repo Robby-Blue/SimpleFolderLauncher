@@ -7,6 +7,6 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="seetrough">#20FFFFFF</color>
+    <color name="see_trough">#20FFFFFF</color>
     <color name="selected">#50FFFFFF</color>
 </resources>

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -42,11 +41,11 @@ public class AddFileActivity extends Activity {
         Intent intent = getIntent();
         parentFolder = intent.getStringExtra("folder");
 
-        nameField = findViewById(R.id.nameField);
+        nameField = findViewById(R.id.name_field);
 
-        Button selectAppFileButton = findViewById(R.id.selectAppFileButton);
-        Button selectFolderButton = findViewById(R.id.selectFolderButton);
-        RecyclerView recycler = findViewById(R.id.appRecycler);
+        Button selectAppFileButton = findViewById(R.id.select_appfile_button);
+        Button selectFolderButton = findViewById(R.id.select_folder_button);
+        RecyclerView recycler = findViewById(R.id.app_recycler);
 
         // app/folder buttons
         selectAppFileButton.setOnClickListener(view -> {

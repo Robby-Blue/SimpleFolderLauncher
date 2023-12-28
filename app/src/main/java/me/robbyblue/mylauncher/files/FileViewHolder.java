@@ -15,6 +15,6 @@ public class FileViewHolder extends RecyclerView.ViewHolder {
     public FileViewHolder(View itemView){
         super(itemView);
         view = itemView;
-        fileLabel = itemView.findViewById(R.id.fileLabel);
+        fileLabel = itemView.findViewById(R.id.name_label);
     }
 }

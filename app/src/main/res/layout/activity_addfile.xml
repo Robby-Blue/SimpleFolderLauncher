@@ -7,48 +7,48 @@
     tools:context=".AddFileActivity">
 
     <EditText
-        android:id="@+id/nameField"
+        android:id="@+id/name_field"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:autofillHints="name"
-        android:hint="@string/displayName"
+        android:hint="@string/display_name"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:lines="1"
         android:maxLines="1" />
 
     <GridLayout
-        android:id="@+id/buttonsLayout"
+        android:id="@+id/buttons_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/nameField"
+        android:layout_above="@+id/name_field"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:useDefaultMargins="true">
 
         <Button
-            android:id="@+id/selectAppFileButton"
+            android:id="@+id/select_appfile_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/default_button_bg"
             android:text="@string/selectAppFileButton" />
 
         <Button
-            android:id="@+id/selectFolderButton"
+            android:id="@+id/select_folder_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/default_button_bg"
-            android:text="@string/selectFolderButton" />
+            android:text="@string/select_folder_button" />
     </GridLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/appRecycler"
+        android:id="@+id/app_recycler"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/buttonsLayout"
+        android:layout_above="@id/buttons_layout"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="30dp"
         android:visibility="invisible" />
