@@ -5,4 +5,6 @@
     <string name="displayName">Display Name</string>
     <string name="create">Create</string>
     <string name="actionDelete">Delete</string>
+    <string name="actionMoveUp">Move Up</string>
+    <string name="actionMoveDown">Move Down</string>
 </resources>

@@ -109,6 +109,49 @@ public class FileDataStorage {
         }
     }
 
+    public void createFile(String parentFolder, AppFile appFile) {
+        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
+        parentFolderContents.add(appFile);
+        storeFilesStructure();
+    }
+
+    public void createFolder(String parentFolder, String name) {
+        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
+        String fullPath = parentFolder + "/" + name;
+        if (files.containsKey(fullPath))
+            return;
+        parentFolderContents.add(new Folder(name, fullPath));
+        files.put(fullPath, new ArrayList<>());
+        storeFilesStructure();
+    }
+
+    public void removeFile(String parentFolder, int fileIndex) {
+        ArrayList<FileNode> contents = getFolderContents(parentFolder);
+        FileNode item = contents.get(fileIndex);
+        if (item instanceof Folder) {
+            // its a folder, remove not just the reference but also the folder itself
+            files.remove(((Folder) item).getFullPath());
+        }
+        contents.remove(fileIndex);
+        storeFilesStructure();
+    }
+
+    public void moveFile(String parentFolder, int initialIndex, int moveIndex) {
+        ArrayList<FileNode> contents = getFolderContents(parentFolder);
+        if (moveIndex < 0 ||moveIndex >= contents.size())
+            return;
+        FileNode item = contents.get(initialIndex);
+        contents.remove(initialIndex);
+        contents.add(moveIndex, item);
+        storeFilesStructure();
+    }
+
+    public ArrayList<FileNode> getFolderContents(String folder) {
+        if (files.containsKey(folder))
+            return files.get(folder);
+        return new ArrayList<>();
+    }
+
     private String readFile(File file) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -134,39 +177,6 @@ public class FileDataStorage {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void removeFile(String parentFolder, int fileIndex) {
-        ArrayList<FileNode> contents = getFolderContents(parentFolder);
-        FileNode item = contents.get(fileIndex);
-        if (item instanceof Folder) {
-            // its a folder, remove not just the reference but also the folder itself
-            files.remove(((Folder) item).getFullPath());
-        }
-        contents.remove(fileIndex);
-        storeFilesStructure();
-    }
-
-    public void createFile(String parentFolder, AppFile appFile) {
-        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
-        parentFolderContents.add(appFile);
-        storeFilesStructure();
-    }
-
-    public void createFolder(String parentFolder, String name) {
-        ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
-        String fullPath = parentFolder + "/" + name;
-        if (files.containsKey(fullPath))
-            return;
-        parentFolderContents.add(new Folder(name, fullPath));
-        files.put(fullPath, new ArrayList<>());
-        storeFilesStructure();
-    }
-
-    public ArrayList<FileNode> getFolderContents(String folder) {
-        if (files.containsKey(folder))
-            return files.get(folder);
-        return new ArrayList<>();
     }
 
 }

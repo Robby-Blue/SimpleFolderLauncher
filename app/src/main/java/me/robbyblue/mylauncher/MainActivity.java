@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileAdapter;
@@ -91,10 +90,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.actionDelete){
+        if (item.getItemId() == R.id.actionDelete)
             dataStorage.removeFile(currentFolder, longClickedId);
-            showFolder(currentFolder);
-        }
+        if (item.getItemId() == R.id.actionMoveUp)
+            dataStorage.moveFile(currentFolder, longClickedId, longClickedId - 1);
+        if (item.getItemId() == R.id.actionMoveDown)
+            dataStorage.moveFile(currentFolder, longClickedId, longClickedId + 1);
+        showFolder(currentFolder);
         return true;
     }
 

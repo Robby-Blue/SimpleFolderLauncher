@@ -3,4 +3,10 @@
     <item
         android:id="@+id/actionDelete"
         android:title="@string/actionDelete" />
+    <item
+        android:id="@+id/actionMoveUp"
+        android:title="@string/actionMoveUp" />
+    <item
+        android:id="@+id/actionMoveDown"
+        android:title="@string/actionMoveDown" />
 </menu>
