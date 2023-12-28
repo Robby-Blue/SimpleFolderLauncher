@@ -62,11 +62,12 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
         });
 
         holder.view.setOnLongClickListener((v) -> {
-            if(file.getName().equals(".."))
-                return false;
+            if (file.getName().equals(".."))
+                return true; // consumed, dont show
+
+            // remember the position and dont consume the click to show the context menu
             activity.setLongClickedID(position);
-            v.showContextMenu(0, 0);
-            return true;
+            return false;
         });
     }
 
