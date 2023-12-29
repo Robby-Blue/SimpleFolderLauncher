@@ -18,7 +18,7 @@ public class AppFile extends FileNode {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AppFile appFile = (AppFile) o;
-        return getName().equals(appFile.getName()) && getPackageName().equals(appFile.getPackageName());
+        return getPackageName().equals(appFile.getPackageName());
     }
 
 }

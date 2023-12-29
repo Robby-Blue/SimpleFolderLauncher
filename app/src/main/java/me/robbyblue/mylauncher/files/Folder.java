@@ -20,7 +20,7 @@ public class Folder extends FileNode{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Folder folder = (Folder) o;
-        return getName().equals(folder.getName()) && getFullPath().equals(folder.getFullPath());
+        return getFullPath().equals(folder.getFullPath());
     }
 
 }
