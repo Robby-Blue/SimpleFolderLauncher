@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataStorage = new FileDataStorage(this);
+        dataStorage = FileDataStorage.getInstance(this);
+        AppsListCache.getInstance(this);
 
         folderPathView = findViewById(R.id.folder_path_text);
         recycler = findViewById(R.id.app_recycler);
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         gestureDetector = new GestureDetectorCompat(this, swipeListener);
 
         swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
-            if (velocityY < -1000 && Math.abs(velocityX) < Math.abs(velocityY) * 0.3) {
+            if (velocityY < -1000 && Math.abs(velocityX) < Math.abs(velocityY) * 0.6) {
                 Intent intent = new Intent(this, SearchActivity.class);
                 searchLauncher.launch(intent);
             }
@@ -114,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onTouchEvent(event);
     }
-
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import me.robbyblue.mylauncher.AddFileActivity;
-import me.robbyblue.mylauncher.MainActivity;
 import me.robbyblue.mylauncher.R;
 
 public class AppSelectionAdapter extends RecyclerView.Adapter<FileViewHolder> {
@@ -22,11 +21,8 @@ public class AppSelectionAdapter extends RecyclerView.Adapter<FileViewHolder> {
     AddFileActivity activity;
     ArrayList<AppFile> apps;
 
-    public AppSelectionAdapter(AddFileActivity activity) {
+    public AppSelectionAdapter(AddFileActivity activity, ArrayList<AppFile> apps) {
         this.activity = activity;
-    }
-
-    public void setApps(ArrayList<AppFile> apps) {
         this.apps = apps;
     }
 

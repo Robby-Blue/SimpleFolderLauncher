@@ -14,4 +14,13 @@ public class Folder extends FileNode{
     public String getFullPath() {
         return fullPath;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Folder folder = (Folder) o;
+        return getName().equals(folder.getName()) && getFullPath().equals(folder.getFullPath());
+    }
+
 }

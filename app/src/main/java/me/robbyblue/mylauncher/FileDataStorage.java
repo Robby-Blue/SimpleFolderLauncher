@@ -21,15 +21,21 @@ import me.robbyblue.mylauncher.files.Folder;
 
 public class FileDataStorage {
 
-    Context context;
+    private static FileDataStorage instance;
     File structureFile;
 
     HashMap<String, ArrayList<FileNode>> files;
 
-    public FileDataStorage(Context context) {
-        this.context = context;
+    private FileDataStorage(Context context) {
         structureFile = new File(context.getFilesDir(), "filesstructure.json");
         this.files = loadFilesStructure();
+    }
+
+    public static FileDataStorage getInstance(Context context) {
+        if (instance == null) {
+            instance = new FileDataStorage(context);
+        }
+        return instance;
     }
 
     public HashMap<String, ArrayList<FileNode>> loadFilesStructure() {
@@ -138,12 +144,26 @@ public class FileDataStorage {
 
     public void moveFile(String parentFolder, int initialIndex, int moveIndex) {
         ArrayList<FileNode> contents = getFolderContents(parentFolder);
-        if (moveIndex < 0 ||moveIndex >= contents.size())
+        if (moveIndex < 0 || moveIndex >= contents.size())
             return;
         FileNode item = contents.get(initialIndex);
         contents.remove(initialIndex);
         contents.add(moveIndex, item);
         storeFilesStructure();
+    }
+
+    public ArrayList<Folder> getFolders() {
+        ArrayList<Folder> folders = new ArrayList<>();
+        for (String folderPath : files.keySet()) {
+            String[] parts = folderPath.split("/");
+            String folderName = parts[parts.length - 1];
+            folders.add(new Folder(folderName, folderPath));
+        }
+        return folders;
+    }
+
+    public ArrayList<FileNode> getFolderContents(Folder folder) {
+        return getFolderContents(folder.getFullPath());
     }
 
     public ArrayList<FileNode> getFolderContents(String folder) {

@@ -2,8 +2,6 @@ package me.robbyblue.mylauncher;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -14,8 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.AppSelectionAdapter;
@@ -62,41 +58,13 @@ public class AddFileActivity extends Activity {
         });
 
         // app selection recycler
-        recycler.setItemAnimator(null); // fix crash https://stackoverflow.com/questions/35653439/
+        apps = AppsListCache.getInstance(this).getApps();
+
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
-        AppSelectionAdapter adapter = new AppSelectionAdapter(this);
-        adapter.setApps(apps);
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(new AppSelectionAdapter(this, apps));
 
-        new Thread(() -> {
-            PackageManager pm = getPackageManager();
-
-            Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
-            getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-            List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, 0);
-            for (ResolveInfo ri : allApps) {
-                apps.add(new AppFile(ri.loadLabel(pm).toString(), ri.activityInfo.packageName));
-                // to lowwer case everything bc by default "s" comes after "Y"
-                apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
-                // find new index of the added app
-                int index = -1;
-                for(int i = 0;i<apps.size();i++){
-                    if(apps.get(i).getPackageName().equals(ri.activityInfo.packageName)){
-                        index = i;
-                        break;
-                    }
-                }
-                int finalIndex = index;
-                runOnUiThread(() -> {
-                    adapter.setApps(apps);
-                    adapter.notifyItemInserted(finalIndex);
-                    recycler.scrollToPosition(0);
-                });
-            }
-        }).start();
-
+        // name field validation and finishing
         nameField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId != EditorInfo.IME_ACTION_DONE)
                 return false;

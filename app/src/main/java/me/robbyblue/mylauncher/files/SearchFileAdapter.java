@@ -35,24 +35,19 @@ public class SearchFileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
         holder.fileLabel.setText(file.getName());
 
+        if (position == 0) {
+            holder.view.setBackgroundResource(R.drawable.selected_button_bg);
+        } else {
+            holder.view.setBackgroundResource(R.drawable.transparent_button_bg);
+        }
+
         if (file instanceof Folder) {
             holder.fileLabel.setTextColor(Color.parseColor("#00CC00"));
         } else {
             holder.fileLabel.setTextColor(Color.parseColor("#EEEEEE"));
         }
 
-        holder.view.setOnClickListener((v) -> {
-            Context context = v.getContext();
-            if (file instanceof Folder) {
-                String fullPath = ((Folder) file).getFullPath();
-                activity.showFolder(fullPath);
-            } else {
-                AppFile appFile = (AppFile) file;
-                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(appFile.getPackageName());
-                context.startActivity(launchIntent);
-                activity.finish();
-            }
-        });
+        holder.view.setOnClickListener((v) -> activity.openFileNode(file));
     }
 
     @Override

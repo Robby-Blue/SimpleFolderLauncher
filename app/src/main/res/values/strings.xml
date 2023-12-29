@@ -7,4 +7,5 @@
     <string name="action_delete">Delete</string>
     <string name="action_move_up">Move Up</string>
     <string name="action_move_down">Move Down</string>
+    <string name="search">Search</string>
 </resources>
