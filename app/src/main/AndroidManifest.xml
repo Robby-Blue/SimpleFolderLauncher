@@ -30,6 +30,8 @@
         </activity>
         <activity
             android:name=".AddFileActivity" />
+        <activity
+            android:name=".SearchActivity" />
     </application>
 
 </manifest>

@@ -4,6 +4,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
     String currentFolder;
     int longClickedId;
 
+    GestureDetectorCompat gestureDetector;
+
     FileDataStorage dataStorage;
 
-    ActivityResultLauncher<Intent> register = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    ActivityResultLauncher<Intent> addFileLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK)
             return;
         Intent intent = result.getData();
@@ -52,6 +56,17 @@ public class MainActivity extends AppCompatActivity {
         showFolder(parentFolder);
     });
 
+    ActivityResultLauncher<Intent> searchLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK)
+            return;
+        Intent intent = result.getData();
+        if (intent == null)
+            return;
+
+        String folder = intent.getStringExtra("folder");
+        showFolder(folder);
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.add_file_button).setOnClickListener(view -> {
             Intent intent = new Intent(this, AddFileActivity.class);
             intent.putExtra("folder", currentFolder);
-            register.launch(intent);
+            addFileLauncher.launch(intent);
         });
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -79,7 +94,27 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
+
+        SwipeListener swipeListener = new SwipeListener();
+        gestureDetector = new GestureDetectorCompat(this, swipeListener);
+
+        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
+            if (velocityY < -1000 && Math.abs(velocityX) < Math.abs(velocityY) * 0.3) {
+                Intent intent = new Intent(this, SearchActivity.class);
+                searchLauncher.launch(intent);
+            }
+            return false;
+        });
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (gestureDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
