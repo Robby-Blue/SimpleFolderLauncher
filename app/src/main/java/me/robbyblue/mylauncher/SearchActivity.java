@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Objects;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
@@ -126,15 +128,43 @@ public class SearchActivity extends Activity {
     private ArrayList<FileNode> search(String query) {
         query = query.toLowerCase();
 
-        ArrayList<FileNode> results = new ArrayList<>();
+        ArrayList<FileMatchResult> results = new ArrayList<>();
 
         for (NamedItem namedItem : searchableItems) {
-            if (!namedItem.getName().contains(query)) continue;
-            if (results.contains(namedItem.getFileNode())) continue;
-            results.add(namedItem.getFileNode());
+            FileMatchResult result = matchesQuery(namedItem, query);
+            if (result.getPoints() == 0) continue;
+            if (results.contains(result)) continue;
+            results.add(result);
         }
 
-        return new ArrayList<>(results.subList(0, Math.min(10, results.size())));
+        results.sort(Comparator.comparing(FileMatchResult::getPoints, Comparator.reverseOrder()));
+        results = new ArrayList<>(results.subList(0, Math.min(10, results.size())));
+
+        ArrayList<FileNode> fileNodes = new ArrayList<>(10);
+
+        for (FileMatchResult result : results) {
+            fileNodes.add(result.getFileNode());
+        }
+
+        return fileNodes;
+    }
+
+    // TODO: probably add more
+    private FileMatchResult matchesQuery(NamedItem namedItem, String query) {
+        String name = namedItem.getName();
+        FileNode fileNode = namedItem.getFileNode();
+
+        FileMatchResult result = new FileMatchResult(fileNode);
+
+        if (name.equals(query)) result.updatePoints(100);
+        if (name.contains(query)) result.updatePoints(50);
+        if (name.startsWith(query)) result.updatePoints(75);
+
+        for (String word : name.split(" ")) {
+            if (word.startsWith(query)) result.updatePoints(25);
+        }
+
+        return result;
     }
 
     private void displaySearchResults() {
@@ -159,6 +189,40 @@ public class SearchActivity extends Activity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("folder", path);
         setResult(Activity.RESULT_OK, resultIntent);
+    }
+
+    private static class FileMatchResult {
+
+        private final FileNode fileNode;
+        private int points;
+
+        private FileMatchResult(FileNode fileNode) {
+            this.fileNode = fileNode;
+            this.points = 0;
+        }
+
+        public void updatePoints(int points) {
+            if (points > this.points) {
+                this.points = points;
+            }
+        }
+
+        public FileNode getFileNode() {
+            return fileNode;
+        }
+
+        public int getPoints() {
+            return points;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FileMatchResult that = (FileMatchResult) o;
+            return Objects.equals(getFileNode(), that.getFileNode());
+        }
+
     }
 
     private static class NamedItem {
