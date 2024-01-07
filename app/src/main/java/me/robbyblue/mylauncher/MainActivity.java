@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.pm.LauncherApps;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,11 +39,9 @@ public class MainActivity extends AppCompatActivity {
     FileDataStorage dataStorage;
 
     ActivityResultLauncher<Intent> addFileLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK)
-            return;
+        if (result.getResultCode() != RESULT_OK) return;
         Intent intent = result.getData();
-        if (intent == null)
-            return;
+        if (intent == null) return;
 
         FileType selectedType = FileType.valueOf(intent.getStringExtra("type"));
         String parentFolder = intent.getStringExtra("parent");
@@ -57,11 +57,9 @@ public class MainActivity extends AppCompatActivity {
     });
 
     ActivityResultLauncher<Intent> searchLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-        if (result.getResultCode() != RESULT_OK)
-            return;
+        if (result.getResultCode() != RESULT_OK) return;
         Intent intent = result.getData();
-        if (intent == null)
-            return;
+        if (intent == null) return;
 
         String folder = intent.getStringExtra("folder");
         showFolder(folder);
@@ -81,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         showFolder("~");
 
         registerForContextMenu(recycler);
+        registerLauncherAppsCallback();
 
         findViewById(R.id.add_file_button).setOnClickListener(view -> {
             Intent intent = new Intent(this, AddFileActivity.class);
@@ -105,6 +104,34 @@ public class MainActivity extends AppCompatActivity {
                 searchLauncher.launch(intent);
             }
             return false;
+        });
+    }
+
+    private void registerLauncherAppsCallback() {
+        LauncherApps launcherApps = (LauncherApps) getSystemService(LAUNCHER_APPS_SERVICE);
+        launcherApps.registerCallback(new LauncherApps.Callback() {
+            @Override
+            public void onPackageAdded(String packageName, UserHandle user) {
+                AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
+            }
+
+            @Override
+            public void onPackageChanged(String packageName, UserHandle user) {
+                AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
+            }
+
+            @Override
+            public void onPackageRemoved(String packageName, UserHandle user) {
+                AppsListCache.getInstance().removePackage(packageName);
+            }
+
+            @Override
+            public void onPackagesAvailable(String[] packageNames, UserHandle user, boolean replacing) {
+            }
+
+            @Override
+            public void onPackagesUnavailable(String[] packageNames, UserHandle user, boolean replacing) {
+            }
         });
     }
 

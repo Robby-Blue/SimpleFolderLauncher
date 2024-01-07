@@ -2,6 +2,7 @@ package me.robbyblue.mylauncher;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
@@ -27,6 +28,13 @@ public class AppsListCache {
         return instance;
     }
 
+    public static AppsListCache getInstance() {
+        if (instance == null) {
+            throw new RuntimeException();
+        }
+        return instance;
+    }
+
     private void loadApps(Context context) {
         new Thread(() -> {
             PackageManager pm = context.getPackageManager();
@@ -42,8 +50,35 @@ public class AppsListCache {
         }).start();
     }
 
+    public void indexPackage(String packageName, Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            ApplicationInfo info = pm.getApplicationInfo(packageName, 0);
+            String appName = info.loadLabel(pm).toString();
+
+            removePackage(packageName);
+            apps.add(new AppFile(appName, packageName));
+            apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removePackage(String packageName) {
+        AppFile foundApp = getAppByPackage(packageName);
+        if (foundApp == null) return;
+        this.apps.remove(foundApp);
+    }
+
     public ArrayList<AppFile> getApps() {
         return this.apps;
+    }
+
+    public AppFile getAppByPackage(String packageName) {
+        for (AppFile app : this.getApps()) {
+            if (app.getPackageName().equals(packageName)) return app;
+        }
+        return null;
     }
 
 }
