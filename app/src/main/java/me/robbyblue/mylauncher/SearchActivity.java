@@ -133,7 +133,12 @@ public class SearchActivity extends Activity {
         for (NamedItem namedItem : searchableItems) {
             FileMatchResult result = matchesQuery(namedItem, query);
             if (result.getPoints() == 0) continue;
-            if (results.contains(result)) continue;
+            if (results.contains(result)) {
+                FileMatchResult currentResult = results.get(results.indexOf(result));
+                if (result.getPoints() > currentResult.getPoints())
+                    currentResult.updatePoints(result.getPoints());
+                continue;
+            }
             results.add(result);
         }
 
