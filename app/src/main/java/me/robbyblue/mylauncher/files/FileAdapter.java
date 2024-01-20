@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import me.robbyblue.mylauncher.AddFileActivity;
 import me.robbyblue.mylauncher.MainActivity;
 import me.robbyblue.mylauncher.R;
 
@@ -36,6 +35,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         FileNode file = files.get(position);
 
+        holder.icon.setImageDrawable(file.getIcon());
         holder.fileLabel.setText(file.getName());
 
         if (file instanceof Folder) {

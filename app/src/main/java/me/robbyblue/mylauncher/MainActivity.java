@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dataStorage = FileDataStorage.getInstance(this);
         AppsListCache.getInstance(this);
+        dataStorage = FileDataStorage.getInstance(this);
 
         folderPathView = findViewById(R.id.folder_path_text);
         recycler = findViewById(R.id.app_recycler);

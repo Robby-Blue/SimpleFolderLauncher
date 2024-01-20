@@ -1,11 +1,21 @@
 package me.robbyblue.mylauncher.files;
 
+import android.graphics.drawable.Drawable;
+
+import me.robbyblue.mylauncher.AppsListCache;
+
 public class AppFile extends FileNode {
 
     private final String packageName;
 
     public AppFile(String name, String packageName){
-        super(name);
+        // no app icon given, take default one from AppsListCache
+        super(name, AppsListCache.getInstance().getAppByPackage(packageName).getIcon());
+        this.packageName = packageName;
+    }
+
+    public AppFile(String name, String packageName, Drawable icon){
+        super(name, icon);
         this.packageName = packageName;
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,18 +37,20 @@ public class AppsListCache {
     }
 
     private void loadApps(Context context) {
-        new Thread(() -> {
-            PackageManager pm = context.getPackageManager();
+        PackageManager pm = context.getPackageManager();
 
-            Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
-            getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
+        getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, 0);
-            for (ResolveInfo ri : allApps) {
-                apps.add(new AppFile(ri.loadLabel(pm).toString(), ri.activityInfo.packageName));
-            }
-            apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
-        }).start();
+        List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, 0);
+        for (ResolveInfo ri : allApps) {
+            String label = ri.loadLabel(pm).toString();
+            String packageName = ri.activityInfo.packageName;
+            Drawable icon = ri.activityInfo.loadIcon(pm);
+            AppFile file = new AppFile(label, packageName, icon);
+            apps.add(file);
+        }
+        apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
     }
 
     public void indexPackage(String packageName, Context context) {
@@ -55,9 +58,10 @@ public class AppsListCache {
             PackageManager pm = context.getPackageManager();
             ApplicationInfo info = pm.getApplicationInfo(packageName, 0);
             String appName = info.loadLabel(pm).toString();
+            Drawable icon = info.loadIcon(pm);
 
             removePackage(packageName);
-            apps.add(new AppFile(appName, packageName));
+            apps.add(new AppFile(appName, packageName, icon));
             apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

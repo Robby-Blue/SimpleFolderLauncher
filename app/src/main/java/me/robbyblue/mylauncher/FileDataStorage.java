@@ -71,7 +71,11 @@ public class FileDataStorage {
                 JSONObject fileNodeJson = folderContentsJson.getJSONObject(i);
                 String name = fileNodeJson.getString("name");
                 if (fileNodeJson.getString("type").equals("file")) {
-                    files.add(new AppFile(name, fileNodeJson.getString("package")));
+                    String packageName = fileNodeJson.getString("package");
+                    if (AppsListCache.getInstance().getAppByPackage(packageName) == null)
+                        continue;
+
+                    files.add(new AppFile(name, packageName));
                 } else {
                     files.add(new Folder(name, folderName + "/" + name));
                 }
