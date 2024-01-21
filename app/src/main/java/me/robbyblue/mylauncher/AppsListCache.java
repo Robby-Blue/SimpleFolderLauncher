@@ -16,7 +16,7 @@ import me.robbyblue.mylauncher.files.AppFile;
 public class AppsListCache {
 
     private static AppsListCache instance;
-    ArrayList<AppFile> apps = new ArrayList<>();
+    ArrayList<AppData> apps = new ArrayList<>();
 
     private AppsListCache(Context context) {
         loadApps(context);
@@ -47,7 +47,7 @@ public class AppsListCache {
             String label = ri.loadLabel(pm).toString();
             String packageName = ri.activityInfo.packageName;
             Drawable icon = ri.activityInfo.loadIcon(pm);
-            AppFile file = new AppFile(label, packageName, icon);
+            AppData file = new AppData(label, packageName, icon);
             apps.add(file);
         }
         apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
@@ -61,7 +61,7 @@ public class AppsListCache {
             Drawable icon = info.loadIcon(pm);
 
             removePackage(packageName);
-            apps.add(new AppFile(appName, packageName, icon));
+            apps.add(new AppData(appName, packageName, icon));
             apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -69,17 +69,25 @@ public class AppsListCache {
     }
 
     public void removePackage(String packageName) {
-        AppFile foundApp = getAppByPackage(packageName);
+        AppData foundApp = getAppByPackage(packageName);
         if (foundApp == null) return;
         this.apps.remove(foundApp);
     }
 
-    public ArrayList<AppFile> getApps() {
+    public ArrayList<AppData> getApps() {
         return this.apps;
     }
 
-    public AppFile getAppByPackage(String packageName) {
-        for (AppFile app : this.getApps()) {
+    public ArrayList<AppFile> getAppsFiles() {
+        ArrayList<AppFile> appFiles = new ArrayList<>();
+        for(AppData appData : this.getApps()){
+            appFiles.add(appData.toAppFile());
+        }
+        return  appFiles;
+    }
+
+    public AppData getAppByPackage(String packageName) {
+        for (AppData app : this.getApps()) {
             if (app.getPackageName().equals(packageName)) return app;
         }
         return null;

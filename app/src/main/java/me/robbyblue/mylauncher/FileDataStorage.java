@@ -18,6 +18,7 @@ import java.util.Iterator;
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
+import me.robbyblue.mylauncher.files.icons.IconData;
 
 public class FileDataStorage {
 
@@ -43,12 +44,10 @@ public class FileDataStorage {
             HashMap<String, ArrayList<FileNode>> files = new HashMap<>();
             files.put("~", new ArrayList<>());
 
-            if (!structureFile.exists())
-                return files;
+            if (!structureFile.exists()) return files;
 
             String fileContents = readFile(structureFile);
-            if (fileContents == null)
-                return files;
+            if (fileContents == null) return files;
 
             JSONObject jsonData = new JSONObject(fileContents);
             Iterator<String> iterator = jsonData.keys();
@@ -74,8 +73,8 @@ public class FileDataStorage {
                     String packageName = fileNodeJson.getString("package");
                     if (AppsListCache.getInstance().getAppByPackage(packageName) == null)
                         continue;
-
-                    files.add(new AppFile(name, packageName));
+                    IconData iconData = IconData.createIconDataFromJson(fileNodeJson);
+                    files.add(new AppFile(name, packageName, iconData));
                 } else {
                     files.add(new Folder(name, folderName + "/" + name));
                 }
@@ -104,6 +103,7 @@ public class FileDataStorage {
             for (FileNode fileNode : fileNodes) {
                 JSONObject fileJson = new JSONObject();
                 fileJson.put("name", fileNode.getName());
+                fileJson.put("icon", fileNode.getIconData().toJson());
                 if (fileNode instanceof AppFile) {
                     fileJson.put("type", "file");
                     fileJson.put("package", ((AppFile) fileNode).getPackageName());
@@ -128,8 +128,7 @@ public class FileDataStorage {
     public void createFolder(String parentFolder, String name) {
         ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder);
         String fullPath = parentFolder + "/" + name;
-        if (files.containsKey(fullPath))
-            return;
+        if (files.containsKey(fullPath)) return;
         parentFolderContents.add(new Folder(name, fullPath));
         files.put(fullPath, new ArrayList<>());
         storeFilesStructure();
@@ -148,8 +147,7 @@ public class FileDataStorage {
 
     public void moveFile(String parentFolder, int initialIndex, int moveIndex) {
         ArrayList<FileNode> contents = getFolderContents(parentFolder);
-        if (moveIndex < 0 || moveIndex >= contents.size())
-            return;
+        if (moveIndex < 0 || moveIndex >= contents.size()) return;
         FileNode item = contents.get(initialIndex);
         contents.remove(initialIndex);
         contents.add(moveIndex, item);
@@ -171,8 +169,7 @@ public class FileDataStorage {
     }
 
     public ArrayList<FileNode> getFolderContents(String folder) {
-        if (files.containsKey(folder))
-            return files.get(folder);
+        if (files.containsKey(folder)) return files.get(folder);
         return new ArrayList<>();
     }
 

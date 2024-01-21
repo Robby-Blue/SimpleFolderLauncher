@@ -1,27 +1,32 @@
 package me.robbyblue.mylauncher.files;
 
-import android.graphics.drawable.Drawable;
+import me.robbyblue.mylauncher.files.icons.IconData;
+import me.robbyblue.mylauncher.files.icons.NoIconData;
 
 public class FileNode {
 
     private final String name;
-    private final Drawable icon;
+    private IconData iconData;
 
-    protected FileNode(String name, Drawable icon) {
+    protected FileNode(String name, IconData iconData) {
         this.name = name;
-        this.icon = icon;
+        this.iconData = iconData;
     }
 
     protected FileNode(String name) {
         this.name = name;
-        this.icon = null;
+        this.iconData = new NoIconData();
     }
 
     public String getName() {
         return name;
     }
 
-    public Drawable getIcon() {
-        return icon;
+    public IconData getIconData() {
+        return iconData;
+    }
+
+    public void setIconData(IconData iconData) {
+        this.iconData = iconData;
     }
 }

@@ -58,7 +58,7 @@ public class AddFileActivity extends Activity {
         });
 
         // app selection recycler
-        apps = AppsListCache.getInstance(this).getApps();
+        apps = AppsListCache.getInstance(this).getAppsFiles();
 
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
