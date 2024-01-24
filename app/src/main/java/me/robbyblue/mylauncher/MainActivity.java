@@ -65,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
         showFolder(folder);
     });
 
+    /**
+     * reloads current folder when finishing activity
+     * and saves the file system to the file
+     */
+    ActivityResultLauncher<Intent> reloadFolderLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) return;
+        showFolder(currentFolder);
+        FileDataStorage.getInstance(this).storeFilesStructure();
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,6 +162,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_edit) {
+            Intent intent = new Intent(this, EditFileIconActivity.class);
+            intent.putExtra("folder", currentFolder);
+            intent.putExtra("fileIndex", longClickedId);
+            reloadFolderLauncher.launch(intent);
+            return true;
+        }
+
         if (item.getItemId() == R.id.action_delete)
             dataStorage.removeFile(currentFolder, longClickedId);
         if (item.getItemId() == R.id.action_move_up)

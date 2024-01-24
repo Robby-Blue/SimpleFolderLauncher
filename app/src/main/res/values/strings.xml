@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MyLauncher</string>
-    <string name="selectAppFileButton">App</string>
+    <string name="select_appfile_button">App</string>
     <string name="select_folder_button">Folder</string>
     <string name="display_name">Display Name</string>
     <string name="create">Create</string>
@@ -8,4 +8,10 @@
     <string name="action_move_up">Move Up</string>
     <string name="action_move_down">Move Down</string>
     <string name="search">Search</string>
+    <string name="action_edit">Edit</string>
+    <string name="select_icon_button">App Icon</string>
+    <string name="select_primary_color_button">Primary Color</string>
+    <string name="select_secondary_color_button">Secondary Color</string>
+    <string name="select_tertiary_color_button">Tertiary Color</string>
+    <string name="select_no_icon_button">No Icon</string>
 </resources>
