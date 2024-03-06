@@ -34,6 +34,7 @@ public class SearchFileAdapter extends RecyclerView.Adapter<FileViewHolder> {
         FileNode file = files.get(position);
 
         holder.fileLabel.setText(file.getName());
+        holder.icon.setImageDrawable(file.getIconData().getIconDrawable());
 
         if (position == 0) {
             holder.view.setBackgroundResource(R.drawable.selected_button_bg);

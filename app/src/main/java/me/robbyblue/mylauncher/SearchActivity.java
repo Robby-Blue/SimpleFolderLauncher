@@ -19,6 +19,7 @@ import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.files.SearchFileAdapter;
+import me.robbyblue.mylauncher.files.icons.AppIconData;
 
 public class SearchActivity extends Activity {
 
@@ -78,6 +79,7 @@ public class SearchActivity extends Activity {
             if (actionId != EditorInfo.IME_ACTION_SEARCH) return false;
             if (searchResults == null) return false;
             if (searchResults.size() == 0) return false;
+            searchBar.clearFocus();
             openFileNode(searchResults.get(0));
             return true;
         });
@@ -99,7 +101,9 @@ public class SearchActivity extends Activity {
             ArrayList<FileNode> contents = fileSystem.getFolderContents(folder);
             for (FileNode fileNode : contents) {
                 if (fileNode instanceof Folder) continue;
-                items.addAll(indexSearchableItem(fileNode));
+                String packageName = ((AppFile) fileNode).getPackageName();
+                AppFile app = new AppFile(fileNode.getName(), packageName, new AppIconData(packageName));
+                items.addAll(indexSearchableItem(app));
             }
         }
         return items;
