@@ -3,6 +3,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:layout_marginStart="8dp"
         android:id="@+id/icon_view"
         android:layout_width="30sp"
         android:layout_height="30sp"
