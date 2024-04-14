@@ -173,6 +173,12 @@ public class FileDataStorage {
         storeFilesStructure();
     }
 
+    public void removeWidget(String parentFolder, int appWidgetId) {
+        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
+        widgetIds.remove((Integer) appWidgetId);
+        storeFilesStructure();
+    }
+
     public void removeFile(String parentFolder, int fileIndex) {
         ArrayList<FileNode> contents = getFolderContents(parentFolder).getFiles();
         FileNode item = contents.get(fileIndex);

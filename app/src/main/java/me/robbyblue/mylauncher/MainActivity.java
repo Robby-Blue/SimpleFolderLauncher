@@ -235,6 +235,12 @@ public class MainActivity extends AppCompatActivity {
             int maxWidth = appWidgetInfo.minWidth;
             int maxHeight = appWidgetInfo.minHeight;
             hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
+
+            hostView.setOnLongClickListener((l) -> {
+                dataStorage.removeWidget(currentFolder, appWidgetId);
+                showFolder(currentFolder);
+                return true;
+            });
         }
     }
 

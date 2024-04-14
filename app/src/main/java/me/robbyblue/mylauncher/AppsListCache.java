@@ -80,10 +80,10 @@ public class AppsListCache {
 
     public ArrayList<AppFile> getAppsFiles() {
         ArrayList<AppFile> appFiles = new ArrayList<>();
-        for(AppData appData : this.getApps()){
+        for (AppData appData : this.getApps()) {
             appFiles.add(appData.toAppFile());
         }
-        return  appFiles;
+        return appFiles;
     }
 
     public AppData getAppByPackage(String packageName) {
