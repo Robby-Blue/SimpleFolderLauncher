@@ -1,5 +1,5 @@
 package me.robbyblue.mylauncher;
 
 public enum FileType {
-    UNSET, APPFILE, FOLDER
+    UNSET, APPFILE, FOLDER, WIDGET
 }

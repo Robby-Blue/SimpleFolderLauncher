@@ -14,4 +14,5 @@
     <string name="select_secondary_color_button">Secondary Color</string>
     <string name="select_tertiary_color_button">Tertiary Color</string>
     <string name="select_no_icon_button">No Icon</string>
+    <string name="select_widget_button">Widget</string>
 </resources>

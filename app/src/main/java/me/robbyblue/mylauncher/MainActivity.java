@@ -8,6 +8,11 @@ import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetHostView;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.os.Bundle;
@@ -17,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     FileDataStorage dataStorage;
 
+    static int APPWIDGET_HOST_ID = 418512;
+
+    AppWidgetManager appWidgetManager;
+
     ActivityResultLauncher<Intent> addFileLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
         Intent intent = result.getData();
@@ -52,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             dataStorage.createFile(parentFolder, new AppFile(name, appPackage));
         } else if (selectedType == FileType.FOLDER) {
             dataStorage.createFolder(parentFolder, name);
+        } else if (selectedType == FileType.WIDGET) {
+            int appWidgetId = intent.getIntExtra("appWidgetId", -1);
+            dataStorage.addWidget(parentFolder, appWidgetId);
         }
         showFolder(parentFolder);
     });
@@ -180,23 +193,49 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void showFolder(String folder) {
-        if (folder.equals("..")) {
+    public void showFolder(String folderPath) {
+        if (folderPath.equals("..")) {
             if (!currentFolder.contains("/")) return;
-            folder = currentFolder.substring(0, currentFolder.lastIndexOf("/"));
+            folderPath = currentFolder.substring(0, currentFolder.lastIndexOf("/"));
         }
-        currentFolder = folder;
-        folderPathView.setText(folder);
+        currentFolder = folderPath;
+        folderPathView.setText(folderPath);
 
-        ArrayList<FileNode> contents = dataStorage.getFolderContents(folder);
+        Folder folder = dataStorage.getFolderContents(folderPath);
+        ArrayList<FileNode> contents = folder.getFiles();
         ArrayList<FileNode> displayFiles = new ArrayList<>(contents);
 
-        if (!folder.equals("~")) {
-            displayFiles.add(new Folder("..", folder));
+        if (!folderPath.equals("~")) {
+            displayFiles.add(new Folder("..", folderPath));
         }
 
         FileAdapter adapter = new FileAdapter(this, displayFiles);
         recycler.setAdapter(adapter);
+
+        showWidgets(folder.getWidgetIds());
+    }
+
+    private void showWidgets(ArrayList<Integer> appWidgetIds) {
+        LinearLayout widgetContainer = findViewById(R.id.widget_container);
+        widgetContainer.removeAllViewsInLayout();
+
+        Context ctx = getApplicationContext();
+
+        for (int appWidgetId : appWidgetIds) {
+            AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, APPWIDGET_HOST_ID);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
+            AppWidgetHostView hostView = appWidgetHost.createView(ctx, appWidgetId, appWidgetManager.getAppWidgetInfo(appWidgetId));
+
+            widgetContainer.addView(hostView);
+            appWidgetHost.startListening();
+
+            AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            int minWidth = appWidgetInfo.minWidth;
+            int minHeight = appWidgetInfo.minHeight;
+            int maxWidth = appWidgetInfo.minWidth;
+            int maxHeight = appWidgetInfo.minHeight;
+            hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
+        }
     }
 
     public void setLongClickedID(int position) {

@@ -1,6 +1,9 @@
 package me.robbyblue.mylauncher;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetHost;
+import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +11,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +22,7 @@ import java.util.ArrayList;
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.AppSelectionAdapter;
 
-public class AddFileActivity extends Activity {
+public class AddFileActivity extends AppCompatActivity {
 
     String parentFolder;
     FileType selectedType = FileType.UNSET;
@@ -28,6 +34,22 @@ public class AddFileActivity extends Activity {
     EditText nameField;
 
     // TODO: make the ui not look sillily ugly
+
+    ActivityResultLauncher<Intent> pickWidgetLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == RESULT_OK) {
+            int appWidgetId = result.getData().getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("parent", parentFolder);
+            resultIntent.putExtra("type", FileType.WIDGET.toString());
+            resultIntent.putExtra("name", "");
+            resultIntent.putExtra("package", "");
+            resultIntent.putExtra("appWidgetId", appWidgetId);
+
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +63,7 @@ public class AddFileActivity extends Activity {
 
         Button selectAppFileButton = findViewById(R.id.select_appfile_button);
         Button selectFolderButton = findViewById(R.id.select_folder_button);
+        Button selectWidgetButton = findViewById(R.id.select_widget_button);
         RecyclerView recycler = findViewById(R.id.app_recycler);
 
         // app/folder buttons
@@ -55,6 +78,15 @@ public class AddFileActivity extends Activity {
             selectFolderButton.setBackgroundResource(R.drawable.selected_button_bg);
             selectAppFileButton.setBackgroundResource(R.drawable.default_button_bg);
             recycler.setVisibility(View.INVISIBLE);
+        });
+
+        selectWidgetButton.setOnClickListener(view -> {
+            Context ctx = getApplicationContext();
+            AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, MainActivity.APPWIDGET_HOST_ID);
+            int appWidgetId = appWidgetHost.allocateAppWidgetId();
+            Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+            pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            pickWidgetLauncher.launch(pickIntent);
         });
 
         // app selection recycler

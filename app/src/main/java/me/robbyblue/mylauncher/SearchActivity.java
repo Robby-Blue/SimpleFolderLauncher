@@ -98,7 +98,7 @@ public class SearchActivity extends Activity {
             items.addAll(indexSearchableItem(folder));
             // apps by their custom names in the folders
 
-            ArrayList<FileNode> contents = fileSystem.getFolderContents(folder);
+            ArrayList<FileNode> contents = fileSystem.getFolderContents(folder).getFiles();
             for (FileNode fileNode : contents) {
                 if (fileNode instanceof Folder) continue;
                 String packageName = ((AppFile) fileNode).getPackageName();
