@@ -237,7 +237,6 @@ public class FileDataStorage {
 
     private void writeFile(File file, String content) {
         try {
-            System.out.println("h");
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
             writer.close();

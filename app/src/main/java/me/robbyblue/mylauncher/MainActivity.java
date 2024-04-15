@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
             hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
 
             hostView.setOnLongClickListener((l) -> {
+                appWidgetHost.deleteAppWidgetId(appWidgetId);
                 dataStorage.removeWidget(currentFolder, appWidgetId);
                 showFolder(currentFolder);
                 return true;
