@@ -8,6 +8,7 @@ import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.search.dots.BrowserDotResult;
 import me.robbyblue.mylauncher.search.dots.DotSearchResult;
 import me.robbyblue.mylauncher.search.dots.MapsDotResult;
+import me.robbyblue.mylauncher.search.dots.YoutubeDotResult;
 
 public class SearchEngine {
 
@@ -16,6 +17,7 @@ public class SearchEngine {
     public SearchEngine() {
         dots.add(new BrowserDotResult());
         dots.add(new MapsDotResult());
+        dots.add(new YoutubeDotResult());
     }
 
     // TODO: add more here
