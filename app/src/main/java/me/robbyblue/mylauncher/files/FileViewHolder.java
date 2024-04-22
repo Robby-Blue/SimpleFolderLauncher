@@ -10,9 +10,9 @@ import me.robbyblue.mylauncher.R;
 
 public class FileViewHolder extends RecyclerView.ViewHolder {
 
-    View view;
-    TextView fileLabel;
-    ImageView icon;
+    public View view;
+    public TextView fileLabel;
+    public ImageView icon;
 
     public FileViewHolder(View itemView){
         super(itemView);

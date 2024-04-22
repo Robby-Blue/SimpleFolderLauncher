@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddFileActivity" />
-        <activity android:name=".SearchActivity" />
+        <activity android:name=".search.SearchActivity" />
         <activity android:name=".EditFileIconActivity" />
     </application>
 

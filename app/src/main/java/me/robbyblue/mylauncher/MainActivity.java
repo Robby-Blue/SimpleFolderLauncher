@@ -31,6 +31,7 @@ import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileAdapter;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
+import me.robbyblue.mylauncher.search.SearchActivity;
 
 
 public class MainActivity extends AppCompatActivity {
