@@ -30,7 +30,7 @@ public class FileSearchResult extends SearchResult {
     }
 
     @Override
-    void open(SearchActivity activity) {
+    protected void open(SearchActivity activity) {
         if (fileNode instanceof Folder) {
             String fullPath = ((Folder) fileNode).getFullPath();
             activity.showFolder(fullPath);

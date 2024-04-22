@@ -20,8 +20,8 @@ public abstract class SearchResult {
         return iconData;
     }
 
-    abstract int getTextColor();
+    protected abstract int getTextColor();
 
-    abstract void open(SearchActivity activity);
+    protected abstract void open(SearchActivity activity);
 
 }

@@ -5,8 +5,18 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import me.robbyblue.mylauncher.files.FileNode;
+import me.robbyblue.mylauncher.search.dots.BrowserDotResult;
+import me.robbyblue.mylauncher.search.dots.DotSearchResult;
+import me.robbyblue.mylauncher.search.dots.MapsDotResult;
 
 public class SearchEngine {
+
+    ArrayList<DotSearchResult> dots = new ArrayList<>();
+
+    public SearchEngine() {
+        dots.add(new BrowserDotResult());
+        dots.add(new MapsDotResult());
+    }
 
     // TODO: add more here
     // like "YouTube" -> "yt"
@@ -75,9 +85,15 @@ public class SearchEngine {
         return result;
     }
 
-    ArrayList<SearchResult> searchDots(String query) {
-        // TODO: implement this
-        return null;
+    public ArrayList<SearchResult> searchDots(String query) {
+        ArrayList<SearchResult> resultDots = new ArrayList<>();
+        for (DotSearchResult dot : dots) {
+            if (dot.isDotInQuery(query)) {
+                resultDots.add(dot);
+                return resultDots;
+            }
+        }
+        return new ArrayList<>();
     }
 
     private static class FileMatchResult {

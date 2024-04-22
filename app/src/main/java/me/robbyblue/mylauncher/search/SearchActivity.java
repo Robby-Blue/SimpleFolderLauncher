@@ -75,7 +75,6 @@ public class SearchActivity extends Activity {
 
                 if (query.contains(".")) {
                     searchResults = search.searchDots(query);
-                    return;
                 } else {
                     searchResults = search.searchFiles(query, searchableItems);
                 }
@@ -129,6 +128,11 @@ public class SearchActivity extends Activity {
         SearchResultAdapter adapter = new SearchResultAdapter(this, searchResults);
         recycler.setAdapter(adapter);
         recycler.scrollToPosition(0);
+    }
+
+    public String getSearchQuery() {
+        EditText searchBar = findViewById(R.id.search_bar);
+        return searchBar.getText().toString();
     }
 
 }
