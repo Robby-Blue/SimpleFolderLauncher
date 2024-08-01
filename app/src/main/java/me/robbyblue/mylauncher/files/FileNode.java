@@ -5,7 +5,7 @@ import me.robbyblue.mylauncher.files.icons.NoIconData;
 
 public class FileNode {
 
-    private final String name;
+    private String name;
     private IconData iconData;
 
     protected FileNode(String name, IconData iconData) {
@@ -26,7 +26,12 @@ public class FileNode {
         return iconData;
     }
 
+    public void setName(String newName) {
+        this.name = newName;
+    }
+
     public void setIconData(IconData iconData) {
         this.iconData = iconData;
     }
+
 }

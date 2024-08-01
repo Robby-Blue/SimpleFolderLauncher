@@ -2,13 +2,13 @@ package me.robbyblue.mylauncher.files;
 
 import java.util.ArrayList;
 
-public class Folder extends FileNode{
+public class Folder extends FileNode {
 
     String fullPath;
     ArrayList<FileNode> files;
     ArrayList<Integer> widgetIds;
 
-    public Folder(String name, String fullPath){
+    public Folder(String name, String fullPath) {
         super(name);
         this.fullPath = fullPath;
         this.files = new ArrayList<>();
@@ -25,6 +25,10 @@ public class Folder extends FileNode{
 
     public ArrayList<Integer> getWidgetIds() {
         return widgetIds;
+    }
+
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
     }
 
     @Override

@@ -35,6 +35,7 @@
         <activity android:name=".AddFileActivity" />
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".EditFileIconActivity" />
+        <activity android:name=".EditFileNameActivity" />
     </application>
 
 </manifest>

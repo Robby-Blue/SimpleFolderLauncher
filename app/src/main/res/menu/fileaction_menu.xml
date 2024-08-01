@@ -2,11 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_edit"
-        android:title="@string/action_edit" />
-    <item
         android:id="@+id/action_delete"
         android:title="@string/action_delete" />
+    <item
+        android:id="@+id/action_change_icon"
+        android:title="@string/action_change_icon" />
+    <item
+        android:id="@+id/action_change_name"
+        android:title="@string/action_change_name" />
     <item
         android:id="@+id/action_move_up"
         android:title="@string/action_move_up" />

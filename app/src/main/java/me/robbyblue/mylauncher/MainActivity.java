@@ -176,8 +176,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_edit) {
+        if (item.getItemId() == R.id.action_change_icon) {
             Intent intent = new Intent(this, EditFileIconActivity.class);
+            intent.putExtra("folder", currentFolder);
+            intent.putExtra("fileIndex", longClickedId);
+            reloadFolderLauncher.launch(intent);
+            return true;
+        }
+        if (item.getItemId() == R.id.action_change_name) {
+            Intent intent = new Intent(this, EditFileNameActivity.class);
             intent.putExtra("folder", currentFolder);
             intent.putExtra("fileIndex", longClickedId);
             reloadFolderLauncher.launch(intent);

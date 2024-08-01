@@ -167,16 +167,39 @@ public class FileDataStorage {
         storeFilesStructure();
     }
 
-    public void addWidget(String parentFolder, int appWidgetId) {
-        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
-        widgetIds.add(appWidgetId);
+    public void renameFile(String parentFolder, int fileIndex, String newName) {
+        ArrayList<FileNode> contents = getFolderContents(parentFolder).getFiles();
+        FileNode item = contents.get(fileIndex);
+        item.setName(newName);
+        if (item instanceof Folder) {
+            // fix full path of folder and its subfolders
+            Folder folder = ((Folder) item);
+            String oldPath = folder.getFullPath();
+            String newPath = oldPath.substring(0, oldPath.lastIndexOf("/") + 1) + newName;
+
+            updateFolderPath(folder, oldPath, newPath);
+        }
         storeFilesStructure();
     }
 
-    public void removeWidget(String parentFolder, int appWidgetId) {
-        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
-        widgetIds.remove((Integer) appWidgetId);
-        storeFilesStructure();
+    private void updateFolderPath(Folder folder, String oldPath, String newPath) {
+        String subfolderPath = folder.getFullPath();
+        boolean shouldRename = subfolderPath.equals(oldPath) || subfolderPath.startsWith(oldPath + "/");
+        if (!shouldRename)
+            return;
+
+        Folder folderContents = getFolderContents(folder);
+        for (FileNode fileNode : folderContents.getFiles()) {
+            if (!(fileNode instanceof Folder))
+                continue;
+            Folder subfolder = (Folder) fileNode;
+            updateFolderPath(subfolder, oldPath, newPath);
+        }
+
+        folder.setFullPath(folder.getFullPath().replace(oldPath, newPath));
+
+        files.put(folder.getFullPath(), folderContents);
+        files.remove(subfolderPath);
     }
 
     public void removeFile(String parentFolder, int fileIndex) {
@@ -187,6 +210,18 @@ public class FileDataStorage {
             files.remove(((Folder) item).getFullPath());
         }
         contents.remove(fileIndex);
+        storeFilesStructure();
+    }
+
+    public void addWidget(String parentFolder, int appWidgetId) {
+        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
+        widgetIds.add(appWidgetId);
+        storeFilesStructure();
+    }
+
+    public void removeWidget(String parentFolder, int appWidgetId) {
+        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
+        widgetIds.remove((Integer) appWidgetId);
         storeFilesStructure();
     }
 
