@@ -1,20 +1,20 @@
 <resources>
     <string name="app_name">MyLauncher</string>
-    <string name="select_appfile_button">App</string>
-    <string name="select_folder_button">Folder</string>
-    <string name="display_name">Display Name</string>
-    <string name="create">Create</string>
-    <string name="action_delete">Delete</string>
-    <string name="action_move_up">Move Up</string>
-    <string name="action_move_down">Move Down</string>
-    <string name="search">Search</string>
-    <string name="action_change_icon">Change Icon</string>
-    <string name="action_change_name">Change Name</string>
-    <string name="select_icon_button">App Icon</string>
-    <string name="select_primary_color_button">Primary Color</string>
-    <string name="select_secondary_color_button">Secondary Color</string>
-    <string name="select_tertiary_color_button">Tertiary Color</string>
-    <string name="select_no_icon_button">No Icon</string>
-    <string name="select_widget_button">Widget</string>
-    <string name="new_name">New Name</string>
+    <string name="select_appfile_button">app</string>
+    <string name="select_folder_button">folder</string>
+    <string name="display_name">display name</string>
+    <string name="create">create</string>
+    <string name="action_delete">delete</string>
+    <string name="action_move_up">move up</string>
+    <string name="action_move_down">move down</string>
+    <string name="search">search</string>
+    <string name="action_change_icon">change icon</string>
+    <string name="action_change_name">change name</string>
+    <string name="select_icon_button">app icon</string>
+    <string name="select_primary_color_button">primary color</string>
+    <string name="select_secondary_color_button">secondary color</string>
+    <string name="select_tertiary_color_button">tertiary color</string>
+    <string name="select_no_icon_button">no icon</string>
+    <string name="select_widget_button">widget</string>
+    <string name="new_name">new name</string>
 </resources>
