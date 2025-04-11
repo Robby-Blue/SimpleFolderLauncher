@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -32,6 +33,9 @@ import me.robbyblue.mylauncher.files.FileAdapter;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.search.SearchActivity;
+import me.robbyblue.mylauncher.widgets.WidgetElement;
+import me.robbyblue.mylauncher.widgets.WidgetLayout;
+import me.robbyblue.mylauncher.widgets.WidgetList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
     FileDataStorage dataStorage;
 
     static int APPWIDGET_HOST_ID = 418512;
-
-    AppWidgetManager appWidgetManager;
 
     ActivityResultLauncher<Intent> addFileLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
@@ -220,21 +222,38 @@ public class MainActivity extends AppCompatActivity {
         FileAdapter adapter = new FileAdapter(this, displayFiles);
         recycler.setAdapter(adapter);
 
-        showWidgets(folder.getWidgetIds());
+        showWidgets(folder.getWidgetList());
     }
 
-    private void showWidgets(ArrayList<Integer> appWidgetIds) {
+    private void showWidgets(WidgetList widgets) {
         LinearLayout widgetContainer = findViewById(R.id.widget_container);
         widgetContainer.removeAllViewsInLayout();
 
         Context ctx = getApplicationContext();
+        AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, APPWIDGET_HOST_ID);
 
-        for (int appWidgetId : appWidgetIds) {
-            AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, APPWIDGET_HOST_ID);
+        int screenWidth = widgetContainer.getWidth();
+
+        for (WidgetLayout widgetLayout : widgets.getChildren()) {
+            if(!(widgetLayout instanceof WidgetElement)) continue;
+
+            int appWidgetId = ((WidgetElement) widgetLayout).getAppWidgetId();
+            RelativeLayout parentLayout = new RelativeLayout(this);
+
+            if(screenWidth != 0){
+                setSize(parentLayout, screenWidth);
+            }else{
+                widgetContainer.post((Runnable) () -> {
+                    int newScreenWidth = widgetContainer.getWidth();
+                    setSize(parentLayout, newScreenWidth);
+                });
+            }
+
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
             AppWidgetHostView hostView = appWidgetHost.createView(ctx, appWidgetId, appWidgetManager.getAppWidgetInfo(appWidgetId));
 
-            widgetContainer.addView(hostView);
+            parentLayout.addView(hostView);
+            widgetContainer.addView(parentLayout);
             appWidgetHost.startListening();
 
             AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
@@ -251,6 +270,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             });
         }
+    }
+
+    private void setSize(RelativeLayout layout, int screenWidth) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth / 2, screenWidth / 2);
+        layout.setLayoutParams(layoutParams);
     }
 
     public void setLongClickedID(int position) {

@@ -19,6 +19,9 @@ import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.files.icons.IconData;
+import me.robbyblue.mylauncher.widgets.WidgetElement;
+import me.robbyblue.mylauncher.widgets.WidgetLayout;
+import me.robbyblue.mylauncher.widgets.WidgetList;
 
 public class FileDataStorage {
 
@@ -76,9 +79,14 @@ public class FileDataStorage {
             Folder folder = new Folder(folderName, folderName);
             folder.getFiles().addAll(parseFilesList(folderContentsJson.getJSONArray("files"), folderName));
 
-            JSONArray widgetIds = folderContentsJson.getJSONArray("widgetIds");
-            for (int i = 0; i < widgetIds.length(); i++) {
-                folder.getWidgetIds().add(widgetIds.getInt(i));
+            if (folderContentsJson.has("widgetIds")) {
+                JSONArray widgetIds = folderContentsJson.getJSONArray("widgetIds");
+                for (int i = 0; i < widgetIds.length(); i++) {
+                    WidgetElement widgetElement = new WidgetElement(widgetIds.getInt(i));
+                    folder.getWidgetList().addChild(widgetElement);
+                }
+            } else if (folderContentsJson.has("widgets")) {
+                folder.setWidgetList(parseWidgetList(folderContentsJson.getJSONObject("widgets")));
             }
             return folder;
         } catch (Exception e) {
@@ -106,6 +114,44 @@ public class FileDataStorage {
             return files;
         } catch (Exception e) {
             return new ArrayList<>();
+        }
+    }
+
+    private WidgetList parseWidgetList(JSONObject jsonObject) {
+        WidgetList widgetList = new WidgetList();
+
+        try {
+            widgetList.setSize(jsonObject.getInt("size"));
+
+            JSONArray childrenArray = jsonObject.getJSONArray("children");
+            for (int i = 0; i < childrenArray.length(); i++) {
+                JSONObject child = childrenArray.getJSONObject(i);
+
+                String type = child.getString("type");
+
+                if (type.equals("widget")) {
+                    WidgetElement element = parseWidgetElement(child);
+                    widgetList.addChild(element);
+                } else if (type.equals("list")) {
+                    WidgetList nestedList = parseWidgetList(child);
+                    widgetList.addChild(nestedList);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return widgetList;
+    }
+
+    private WidgetElement parseWidgetElement(JSONObject jsonObject) {
+        try {
+            WidgetElement widgetElement = new WidgetElement(jsonObject.getInt("widgetId"));
+            widgetElement.setSize(jsonObject.getInt("size"));
+            return widgetElement;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -139,17 +185,48 @@ public class FileDataStorage {
             }
             folderObject.put("files", filesArray);
 
-            JSONArray widgetsArray = new JSONArray();
-            for (int widgetId : folder.getWidgetIds()) {
-                widgetsArray.put(widgetId);
-            }
+            JSONObject widgetsArray = jsonifyWidgetList(folder.getWidgetList());
 
-            folderObject.put("widgetIds", widgetsArray);
+            folderObject.put("widgets", widgetsArray);
             return folderObject;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private JSONObject jsonifyWidgetList(WidgetList widgetList) {
+        JSONArray childrenArray = new JSONArray();
+        for (WidgetLayout widgetLayout : widgetList.getChildren()) {
+            if (widgetLayout instanceof WidgetElement) {
+                childrenArray.put(jsonifyWidget((WidgetElement) widgetLayout));
+            }
+            if (widgetLayout instanceof WidgetList) {
+                childrenArray.put(jsonifyWidgetList((WidgetList) widgetLayout));
+            }
+        }
+
+        JSONObject widgetObject = new JSONObject();
+        try {
+            widgetObject.put("size", widgetList.getSize());
+            widgetObject.put("children", childrenArray);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return widgetObject;
+    }
+
+    private JSONObject jsonifyWidget(WidgetElement widgetElement) {
+        JSONObject widgetObject = new JSONObject();
+        try {
+            widgetObject.put("size", widgetElement.getSize());
+            widgetObject.put("id", widgetElement.getAppWidgetId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return widgetObject;
     }
 
     public void createFile(String parentFolder, AppFile appFile) {
@@ -214,14 +291,20 @@ public class FileDataStorage {
     }
 
     public void addWidget(String parentFolder, int appWidgetId) {
-        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
-        widgetIds.add(appWidgetId);
+        WidgetList widgets = getFolderContents(parentFolder).getWidgetList();
+        widgets.addChild(new WidgetElement(appWidgetId));
         storeFilesStructure();
     }
 
     public void removeWidget(String parentFolder, int appWidgetId) {
-        ArrayList<Integer> widgetIds = getFolderContents(parentFolder).getWidgetIds();
-        widgetIds.remove((Integer) appWidgetId);
+        WidgetList widgetIds = getFolderContents(parentFolder).getWidgetList();
+
+        widgetIds.getChildren().removeIf((widget) -> {
+            if (!(widget instanceof WidgetElement)) {
+                return false;
+            }
+            return ((WidgetElement) widget).getAppWidgetId() == appWidgetId;
+        });
         storeFilesStructure();
     }
 

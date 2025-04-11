@@ -2,17 +2,19 @@ package me.robbyblue.mylauncher.files;
 
 import java.util.ArrayList;
 
+import me.robbyblue.mylauncher.widgets.WidgetList;
+
 public class Folder extends FileNode {
 
     String fullPath;
     ArrayList<FileNode> files;
-    ArrayList<Integer> widgetIds;
+    WidgetList widgetList;
 
     public Folder(String name, String fullPath) {
         super(name);
         this.fullPath = fullPath;
         this.files = new ArrayList<>();
-        this.widgetIds = new ArrayList<>();
+        this.widgetList = new WidgetList();
     }
 
     public String getFullPath() {
@@ -23,8 +25,12 @@ public class Folder extends FileNode {
         return files;
     }
 
-    public ArrayList<Integer> getWidgetIds() {
-        return widgetIds;
+    public WidgetList getWidgetList() {
+        return widgetList;
+    }
+
+    public void setWidgetList(WidgetList widgetList) {
+        this.widgetList = widgetList;
     }
 
     public void setFullPath(String fullPath) {
