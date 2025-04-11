@@ -131,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
     }
 
     private void registerLauncherAppsCallback() {
