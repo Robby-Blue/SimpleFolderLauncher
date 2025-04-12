@@ -3,6 +3,7 @@ package me.robbyblue.mylauncher;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import android.content.pm.LauncherApps;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -51,6 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
     static int APPWIDGET_HOST_ID = 418512;
 
+    boolean isContextMenuOpen = false;
+
+    ActivityResultLauncher<Intent> addWidgetLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        dataStorage.storeFilesStructure();
+        showFolder(currentFolder);
+    });
+
     ActivityResultLauncher<Intent> addFileLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
         Intent intent = result.getData();
@@ -65,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
             dataStorage.createFile(parentFolder, new AppFile(name, appPackage));
         } else if (selectedType == FileType.FOLDER) {
             dataStorage.createFolder(parentFolder, name);
-        } else if (selectedType == FileType.WIDGET) {
-            int appWidgetId = intent.getIntExtra("appWidgetId", -1);
-            dataStorage.addWidget(parentFolder, appWidgetId);
         }
         showFolder(parentFolder);
     });
@@ -104,14 +110,12 @@ public class MainActivity extends AppCompatActivity {
         recycler.setLayoutManager(new LinearLayoutManager(this));
         showFolder("~");
 
+        registerForContextMenu(findViewById(R.id.background));
         registerForContextMenu(recycler);
-        registerLauncherAppsCallback();
 
-        findViewById(R.id.add_file_button).setOnClickListener(view -> {
-            Intent intent = new Intent(this, AddFileActivity.class);
-            intent.putExtra("folder", currentFolder);
-            addFileLauncher.launch(intent);
-        });
+        recycler.setOnLongClickListener((l) -> false);
+
+        registerLauncherAppsCallback();
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -133,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-
     }
 
     private void registerLauncherAppsCallback() {
@@ -175,12 +178,46 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+
+        if (isContextMenuOpen) {
+            return;
+        }
+        isContextMenuOpen = true;
+
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.fileaction_menu, menu);
+
+        int id = -1;
+        if (v == findViewById(R.id.background)) {
+            id = R.menu.addaction_menu;
+        } else if (v == recycler) {
+            id = R.menu.fileaction_menu;
+        }
+
+        inflater.inflate(id, menu);
+    }
+
+    @Override
+    public void onContextMenuClosed(@NonNull Menu menu) {
+        super.onContextMenuClosed(menu);
+        isContextMenuOpen = false;
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_add_file) {
+            Intent intent = new Intent(this, AddFileActivity.class);
+            intent.putExtra("folder", currentFolder);
+            addFileLauncher.launch(intent);
+            return true;
+        }
+        if (item.getItemId() == R.id.action_add_widget) {
+            Intent intent = new Intent(this, WidgetSetupActivity.class);
+            intent.putExtra("folder", currentFolder);
+
+            addWidgetLauncher.launch(intent);
+            return true;
+        }
+
         if (item.getItemId() == R.id.action_change_icon) {
             Intent intent = new Intent(this, EditFileIconActivity.class);
             intent.putExtra("folder", currentFolder);
@@ -202,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
             dataStorage.moveFile(currentFolder, longClickedId, longClickedId - 1);
         if (item.getItemId() == R.id.action_move_down)
             dataStorage.moveFile(currentFolder, longClickedId, longClickedId + 1);
+
         showFolder(currentFolder);
         return true;
     }
@@ -238,14 +276,14 @@ public class MainActivity extends AppCompatActivity {
         int screenWidth = widgetContainer.getWidth();
 
         for (WidgetLayout widgetLayout : widgets.getChildren()) {
-            if(!(widgetLayout instanceof WidgetElement)) continue;
+            if (!(widgetLayout instanceof WidgetElement)) continue;
 
             int appWidgetId = ((WidgetElement) widgetLayout).getAppWidgetId();
             RelativeLayout parentLayout = new RelativeLayout(this);
 
-            if(screenWidth != 0){
+            if (screenWidth != 0) {
                 setSize(parentLayout, screenWidth);
-            }else{
+            } else {
                 widgetContainer.post((Runnable) () -> {
                     int newScreenWidth = widgetContainer.getWidth();
                     setSize(parentLayout, newScreenWidth);
@@ -264,11 +302,11 @@ public class MainActivity extends AppCompatActivity {
             int minHeight = appWidgetInfo.minHeight;
             int maxWidth = appWidgetInfo.minWidth;
             int maxHeight = appWidgetInfo.minHeight;
+
             hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
 
             hostView.setOnLongClickListener((l) -> {
                 appWidgetHost.deleteAppWidgetId(appWidgetId);
-                dataStorage.removeWidget(currentFolder, appWidgetId);
                 showFolder(currentFolder);
                 return true;
             });

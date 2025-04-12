@@ -6,6 +6,12 @@ public class WidgetList extends WidgetLayout {
 
     ArrayList<WidgetLayout> children;
 
+    public WidgetList(double size){
+        super();
+        this.children = new ArrayList<>();
+        this.size = size;
+    }
+
     public WidgetList(){
         super();
         this.children = new ArrayList<>();

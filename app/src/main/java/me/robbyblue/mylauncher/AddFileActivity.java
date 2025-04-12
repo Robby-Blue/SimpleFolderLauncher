@@ -63,7 +63,6 @@ public class AddFileActivity extends AppCompatActivity {
 
         Button selectAppFileButton = findViewById(R.id.select_appfile_button);
         Button selectFolderButton = findViewById(R.id.select_folder_button);
-        Button selectWidgetButton = findViewById(R.id.select_widget_button);
         RecyclerView recycler = findViewById(R.id.app_recycler);
 
         // app/folder buttons
@@ -78,15 +77,6 @@ public class AddFileActivity extends AppCompatActivity {
             selectFolderButton.setBackgroundResource(R.drawable.selected_button_bg);
             selectAppFileButton.setBackgroundResource(R.drawable.default_button_bg);
             recycler.setVisibility(View.INVISIBLE);
-        });
-
-        selectWidgetButton.setOnClickListener(view -> {
-            Context ctx = getApplicationContext();
-            AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, MainActivity.APPWIDGET_HOST_ID);
-            int appWidgetId = appWidgetHost.allocateAppWidgetId();
-            Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
-            pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            pickWidgetLauncher.launch(pickIntent);
         });
 
         // app selection recycler

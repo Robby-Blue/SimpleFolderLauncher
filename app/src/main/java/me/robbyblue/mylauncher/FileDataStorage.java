@@ -35,6 +35,10 @@ public class FileDataStorage {
         this.files = loadFilesStructure();
     }
 
+    public static FileDataStorage getInstance() {
+        return instance;
+    }
+
     public static FileDataStorage getInstance(Context context) {
         if (instance == null) {
             instance = new FileDataStorage(context);
@@ -121,7 +125,7 @@ public class FileDataStorage {
         WidgetList widgetList = new WidgetList();
 
         try {
-            widgetList.setSize(jsonObject.getInt("size"));
+            widgetList.setSize(jsonObject.getDouble("size"));
 
             JSONArray childrenArray = jsonObject.getJSONArray("children");
             for (int i = 0; i < childrenArray.length(); i++) {
@@ -147,7 +151,7 @@ public class FileDataStorage {
     private WidgetElement parseWidgetElement(JSONObject jsonObject) {
         try {
             WidgetElement widgetElement = new WidgetElement(jsonObject.getInt("widgetId"));
-            widgetElement.setSize(jsonObject.getInt("size"));
+            widgetElement.setSize(jsonObject.getDouble("size"));
             return widgetElement;
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,6 +212,7 @@ public class FileDataStorage {
 
         JSONObject widgetObject = new JSONObject();
         try {
+            widgetObject.put("type", "list");
             widgetObject.put("size", widgetList.getSize());
             widgetObject.put("children", childrenArray);
         } catch (Exception e) {
@@ -220,8 +225,9 @@ public class FileDataStorage {
     private JSONObject jsonifyWidget(WidgetElement widgetElement) {
         JSONObject widgetObject = new JSONObject();
         try {
+            widgetObject.put("type", "widget");
             widgetObject.put("size", widgetElement.getSize());
-            widgetObject.put("id", widgetElement.getAppWidgetId());
+            widgetObject.put("widgetId", widgetElement.getAppWidgetId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,24 +293,6 @@ public class FileDataStorage {
             files.remove(((Folder) item).getFullPath());
         }
         contents.remove(fileIndex);
-        storeFilesStructure();
-    }
-
-    public void addWidget(String parentFolder, int appWidgetId) {
-        WidgetList widgets = getFolderContents(parentFolder).getWidgetList();
-        widgets.addChild(new WidgetElement(appWidgetId));
-        storeFilesStructure();
-    }
-
-    public void removeWidget(String parentFolder, int appWidgetId) {
-        WidgetList widgetIds = getFolderContents(parentFolder).getWidgetList();
-
-        widgetIds.getChildren().removeIf((widget) -> {
-            if (!(widget instanceof WidgetElement)) {
-                return false;
-            }
-            return ((WidgetElement) widget).getAppWidgetId() == appWidgetId;
-        });
         storeFilesStructure();
     }
 
