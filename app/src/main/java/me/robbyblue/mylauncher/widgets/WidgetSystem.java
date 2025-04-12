@@ -5,13 +5,18 @@ import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 
 import java.util.HashMap;
 
 public class WidgetSystem {
 
-    public static HashMap<WidgetLayout, LinearLayout> createLayout(WidgetList widgets, LinearLayout container) {
+    static boolean showOutlines;
+
+    public static HashMap<WidgetLayout, LinearLayout> createLayout(WidgetList widgets, LinearLayout container, boolean hasOutlines) {
+        showOutlines = hasOutlines;
+
         container.removeAllViewsInLayout();
         HashMap<WidgetLayout, LinearLayout> layouts = new HashMap<>();
 
@@ -42,7 +47,11 @@ public class WidgetSystem {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
         childLayout.setLayoutParams(layoutParams);
 
-        childLayout.setBackground(createOutline(Color.MAGENTA));
+        if (showOutlines) {
+            childLayout.setBackground(createOutline(Color.MAGENTA));
+        }
+
+        childLayout.setGravity(Gravity.CENTER);
 
         container.addView(childLayout);
         return childLayout;
@@ -57,9 +66,11 @@ public class WidgetSystem {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
         childLayout.setLayoutParams(layoutParams);
 
-        childLayout.setBackground(createOutline(Color.BLUE));
+        if (showOutlines) {
+            childLayout.setBackground(createOutline(Color.BLUE));
+        }
 
-        for(WidgetLayout child : widget.getChildren()){
+        for (WidgetLayout child : widget.getChildren()) {
             addWidgetInRow(child, childLayout, layouts, screenWidth, height);
         }
 
@@ -75,7 +86,9 @@ public class WidgetSystem {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, parentHeight);
         childLayout.setLayoutParams(layoutParams);
 
-        childLayout.setBackground(createOutline(Color.GREEN));
+        if (showOutlines) {
+            childLayout.setBackground(createOutline(Color.GREEN));
+        }
 
         container.addView(childLayout);
         layouts.put(widget, childLayout);

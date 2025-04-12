@@ -94,7 +94,7 @@ public class WidgetSetupActivity extends AppCompatActivity {
         FileDataStorage fs = FileDataStorage.getInstance();
         WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
         LinearLayout container = findViewById(R.id.widget_container);
-        HashMap<WidgetLayout, LinearLayout> layouts = WidgetSystem.createLayout(widgetList, container);
+        HashMap<WidgetLayout, LinearLayout> layouts = WidgetSystem.createLayout(widgetList, container, true);
 
         for (WidgetLayout widgetLayout : layouts.keySet()) {
             if (!(widgetLayout instanceof WidgetElement)) return;

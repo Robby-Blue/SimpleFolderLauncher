@@ -29,6 +29,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileAdapter;
@@ -38,6 +39,7 @@ import me.robbyblue.mylauncher.search.SearchActivity;
 import me.robbyblue.mylauncher.widgets.WidgetElement;
 import me.robbyblue.mylauncher.widgets.WidgetLayout;
 import me.robbyblue.mylauncher.widgets.WidgetList;
+import me.robbyblue.mylauncher.widgets.WidgetSystem;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -268,48 +270,41 @@ public class MainActivity extends AppCompatActivity {
 
     private void showWidgets(WidgetList widgets) {
         LinearLayout widgetContainer = findViewById(R.id.widget_container);
+
+        if (widgetContainer.getWidth() == 0){
+            widgetContainer.post((Runnable) () -> {
+                showWidgets(widgets);
+            });
+            return;
+        }
+
         widgetContainer.removeAllViewsInLayout();
 
         Context ctx = getApplicationContext();
         AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, APPWIDGET_HOST_ID);
 
-        int screenWidth = widgetContainer.getWidth();
+        HashMap<WidgetLayout, LinearLayout> layouts = WidgetSystem.createLayout(widgets, widgetContainer, false);
 
-        for (WidgetLayout widgetLayout : widgets.getChildren()) {
-            if (!(widgetLayout instanceof WidgetElement)) continue;
+        for (WidgetLayout widgetLayout : layouts.keySet()) {
+            if (!(widgetLayout instanceof WidgetElement)) return;
 
-            int appWidgetId = ((WidgetElement) widgetLayout).getAppWidgetId();
-            RelativeLayout parentLayout = new RelativeLayout(this);
-
-            if (screenWidth != 0) {
-                setSize(parentLayout, screenWidth);
-            } else {
-                widgetContainer.post((Runnable) () -> {
-                    int newScreenWidth = widgetContainer.getWidth();
-                    setSize(parentLayout, newScreenWidth);
-                });
-            }
-
+            LinearLayout layout = layouts.get(widgetLayout);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
-            AppWidgetHostView hostView = appWidgetHost.createView(ctx, appWidgetId, appWidgetManager.getAppWidgetInfo(appWidgetId));
 
-            parentLayout.addView(hostView);
-            widgetContainer.addView(parentLayout);
+            int id = ((WidgetElement) widgetLayout).getAppWidgetId();
+
+            AppWidgetHostView hostView = appWidgetHost.createView(ctx, id, appWidgetManager.getAppWidgetInfo(id));
+
+            layout.addView(hostView);
             appWidgetHost.startListening();
 
-            AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+            AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(id);
             int minWidth = appWidgetInfo.minWidth;
             int minHeight = appWidgetInfo.minHeight;
             int maxWidth = appWidgetInfo.minWidth;
             int maxHeight = appWidgetInfo.minHeight;
 
             hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
-
-            hostView.setOnLongClickListener((l) -> {
-                appWidgetHost.deleteAppWidgetId(appWidgetId);
-                showFolder(currentFolder);
-                return true;
-            });
         }
     }
 
