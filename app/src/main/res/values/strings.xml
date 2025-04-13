@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyLauncher</string>
+    <string name="app_name">folder launcher</string>
     <string name="select_appfile_button">app</string>
     <string name="select_folder_button">folder</string>
     <string name="display_name">display name</string>

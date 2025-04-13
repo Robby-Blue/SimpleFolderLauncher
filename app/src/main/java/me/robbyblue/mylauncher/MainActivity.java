@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+        findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
     }
 
     private void registerLauncherAppsCallback() {
@@ -151,11 +152,13 @@ public class MainActivity extends AppCompatActivity {
         launcherApps.registerCallback(new LauncherApps.Callback() {
             @Override
             public void onPackageAdded(String packageName, UserHandle user) {
+                if (AppsListCache.getInstance() == null) return;
                 AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
             }
 
             @Override
             public void onPackageChanged(String packageName, UserHandle user) {
+                if (AppsListCache.getInstance() == null) return;
                 AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
             }
 
@@ -276,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
     private void showWidgets(WidgetList widgets) {
         LinearLayout widgetContainer = findViewById(R.id.widget_container);
 
-        if (widgetContainer.getWidth() == 0){
+        if (widgetContainer.getWidth() == 0) {
             widgetContainer.post((Runnable) () -> {
                 showWidgets(widgets);
             });

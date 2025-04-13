@@ -35,7 +35,7 @@ public class AppsListCache {
 
     public static AppsListCache getInstance() {
         if (instance == null) {
-            throw new RuntimeException();
+            return null;
         }
         return instance;
     }
