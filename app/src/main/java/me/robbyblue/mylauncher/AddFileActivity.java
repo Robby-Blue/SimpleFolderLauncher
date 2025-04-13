@@ -80,7 +80,7 @@ public class AddFileActivity extends AppCompatActivity {
         });
 
         // app selection recycler
-        apps = AppsListCache.getInstance(this).getAppsFiles();
+        apps = AppsListCache.getInstance().getAppsFiles();
 
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);

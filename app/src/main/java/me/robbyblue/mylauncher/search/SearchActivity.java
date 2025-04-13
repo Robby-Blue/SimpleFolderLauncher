@@ -96,7 +96,7 @@ public class SearchActivity extends Activity {
     private ArrayList<NamedItem> indexSearchableItems() {
         // add apps by their actual names
         ArrayList<NamedItem> items = new ArrayList<>();
-        for (FileNode fileNode : AppsListCache.getInstance(this).getAppsFiles()) {
+        for (FileNode fileNode : AppsListCache.getInstance().getAppsFiles()) {
             items.addAll(search.indexSearchableItem(fileNode));
         }
         // folders

@@ -1,11 +1,13 @@
 package me.robbyblue.mylauncher;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,15 +18,17 @@ import me.robbyblue.mylauncher.files.AppFile;
 public class AppsListCache {
 
     private static AppsListCache instance;
+    TextView statusViev;
     ArrayList<AppData> apps = new ArrayList<>();
 
-    private AppsListCache(Context context) {
+    private AppsListCache(Context context, TextView view) {
+        this.statusViev = view;
         loadApps(context);
     }
 
-    public static AppsListCache getInstance(Context context) {
+    public static AppsListCache getInstance(Context context, TextView view) {
         if (instance == null) {
-            instance = new AppsListCache(context);
+            instance = new AppsListCache(context, view);
         }
         return instance;
     }
@@ -42,13 +46,20 @@ public class AppsListCache {
         Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
         getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, 0);
+        List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, PackageManager.GET_META_DATA);
+        int totalApps = allApps.size();
+        int appIndex = 0;
         for (ResolveInfo ri : allApps) {
             String label = ri.loadLabel(pm).toString();
             String packageName = ri.activityInfo.packageName;
             Drawable icon = ri.activityInfo.loadIcon(pm);
             AppData file = new AppData(label, packageName, icon);
             apps.add(file);
+
+            String text = appIndex + "/" + totalApps + " " + packageName;
+            ((Activity) context).runOnUiThread(() -> statusViev.setText(text));
+
+            appIndex++;
         }
         apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
     }

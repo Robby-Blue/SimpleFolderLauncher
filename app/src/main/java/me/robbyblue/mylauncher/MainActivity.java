@@ -104,13 +104,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AppsListCache.getInstance(this);
-        dataStorage = FileDataStorage.getInstance(this);
-
-        folderPathView = findViewById(R.id.folder_path_text);
         recycler = findViewById(R.id.app_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
-        showFolder("~");
+
+        folderPathView = findViewById(R.id.folder_path_text);
+
+        new Thread(() -> {
+            AppsListCache.getInstance(this, folderPathView);
+            dataStorage = FileDataStorage.getInstance(this);
+            runOnUiThread(() -> {
+                showFolder("~");
+            });
+        }).start();
 
         registerForContextMenu(findViewById(R.id.background));
         registerForContextMenu(recycler);
