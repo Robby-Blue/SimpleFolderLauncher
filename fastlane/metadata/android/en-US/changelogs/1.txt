@@ -1,0 +1,4 @@
+Initial Release
+- works
+- add/remove apps, folders and widgets
+- unintuivie UI

@@ -1,0 +1,3 @@
+A simple, private, FOSS, file structure inspired, unintuitive, android launcher.
+
+Long click the background to add files (apps), folders or edit widgets.
