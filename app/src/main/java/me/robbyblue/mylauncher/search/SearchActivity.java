@@ -130,6 +130,13 @@ public class SearchActivity extends Activity {
         recycler.scrollToPosition(0);
     }
 
+    
+    // Automatically open the result if there is only one match
+    if (searchResults != null && searchResults.size() == 1) {
+        searchResults.get(0).open(this);
+        finish();
+    }
+
     public String getSearchQuery() {
         EditText searchBar = findViewById(R.id.search_bar);
         return searchBar.getText().toString();
