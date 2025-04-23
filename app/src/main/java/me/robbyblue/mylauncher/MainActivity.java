@@ -301,12 +301,16 @@ public class MainActivity extends AppCompatActivity {
 
             int id = ((WidgetElement) widgetLayout).getAppWidgetId();
 
+            AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(id);
+            if(appWidgetInfo == null){
+                continue;
+            }
+
             AppWidgetHostView hostView = appWidgetHost.createView(ctx, id, appWidgetManager.getAppWidgetInfo(id));
 
             layout.addView(hostView);
             appWidgetHost.startListening();
 
-            AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(id);
             int minWidth = appWidgetInfo.minWidth;
             int minHeight = appWidgetInfo.minHeight;
             int maxWidth = appWidgetInfo.minWidth;
