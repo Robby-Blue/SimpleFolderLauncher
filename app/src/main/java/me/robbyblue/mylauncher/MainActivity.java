@@ -1,14 +1,6 @@
 package me.robbyblue.mylauncher;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GestureDetectorCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
@@ -27,7 +19,18 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -136,10 +139,34 @@ public class MainActivity extends AppCompatActivity {
         gestureDetector = new GestureDetectorCompat(this, swipeListener);
 
         swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
-            if (velocityY < -1000 && Math.abs(velocityX) < Math.abs(velocityY) * 0.6) {
+            if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
+                return true;
+            }
+
+            if (velocityY < -1000) {
                 Intent intent = new Intent(this, SearchActivity.class);
                 searchLauncher.launch(intent);
+            } else if (velocityY > 1000) {
+                String panelMethod = "expandNotificationsPanel";
+                if(velocityY > 5000) {
+                    panelMethod = "expandSettingsPanel";
+                }
+
+                // as per https://stackoverflow.com/questions/31897920/how-to-open-the-android-quick-notification-setting
+                try {
+                    @SuppressLint("WrongConstant") Object service = getSystemService("statusbar");
+                    Class<?> statusBarManager = Class.forName("android.app.StatusBarManager");
+
+                    Method expand = statusBarManager.getMethod(panelMethod);
+                    expand.invoke(service);
+                } catch (Exception e) {
+                    String toastText = "couldn't open quick settings: " + e;
+                    Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
+                    toast.show();
+                    e.printStackTrace();
+                }
             }
+
             return false;
         });
 
@@ -302,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
             int id = ((WidgetElement) widgetLayout).getAppWidgetId();
 
             AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(id);
-            if(appWidgetInfo == null){
+            if (appWidgetInfo == null) {
                 continue;
             }
 
