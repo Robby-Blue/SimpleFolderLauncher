@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:fitsSystemWindows="false"
+    android:focusable="true"
     tools:context=".search.SearchActivity">
 
     <EditText
@@ -26,6 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/search_bar"
         android:layout_marginHorizontal="20dp"
+        android:clickable="true"
+        android:focusable="true"
         android:nestedScrollingEnabled="false" />
 
 </RelativeLayout>

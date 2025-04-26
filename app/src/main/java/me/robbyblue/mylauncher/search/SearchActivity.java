@@ -2,12 +2,17 @@ package me.robbyblue.mylauncher.search;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +21,7 @@ import java.util.ArrayList;
 import me.robbyblue.mylauncher.AppsListCache;
 import me.robbyblue.mylauncher.FileDataStorage;
 import me.robbyblue.mylauncher.R;
+import me.robbyblue.mylauncher.SwipeListener;
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
@@ -30,6 +36,9 @@ public class SearchActivity extends Activity {
     RecyclerView recycler;
     LinearLayoutManager layoutManager;
 
+    GestureDetectorCompat gestureDetector;
+    boolean keyboardWasOpened = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +47,31 @@ public class SearchActivity extends Activity {
         searchableItems = indexSearchableItems();
 
         recycler = findViewById(R.id.app_recycler);
+        recycler.setOnLongClickListener((l) -> false);
+
+
+        SwipeListener swipeListener = new SwipeListener();
+        gestureDetector = new GestureDetectorCompat(this, swipeListener);
+
+        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
+            if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
+                return true;
+            }
+
+            if (velocityY > 1000) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                if (getCurrentFocus() != null) {
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                }
+                finish();
+            }
+
+            return false;
+        });
+
+        recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+        findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
         EditText searchBar = findViewById(R.id.search_bar);
 
         layoutManager = new LinearLayoutManager(this) {
@@ -52,13 +86,22 @@ public class SearchActivity extends Activity {
 
         searchBar.requestFocus();
 
-        long startTime = System.currentTimeMillis();
+        final View rootView = findViewById(android.R.id.content);
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            rootView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = rootView.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
 
-        searchBar.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-            // it already triggers once automatically at around 80 ms on my phone
-            // theres probably a better way to do this
-            if (oldTop < top && System.currentTimeMillis() - startTime > 200) {
-                finish();
+            // its closed for a few ms at the beginning, we need to
+            // make sure it was considered open at least once
+            // to avoid premature closing
+            if (keypadHeight < screenHeight * 0.15) {
+                if (keyboardWasOpened) {
+                    finish();
+                }
+            } else {
+                keyboardWasOpened = true;
             }
         });
 

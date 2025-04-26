@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
             if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
-                return true;
+                return false;
             }
 
             if (velocityY < -1000) {
