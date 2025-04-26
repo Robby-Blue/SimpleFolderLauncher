@@ -7,4 +7,7 @@
     <item
         android:id="@+id/action_add_widget"
         android:title="@string/action_add_widget" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings" />
 </menu>

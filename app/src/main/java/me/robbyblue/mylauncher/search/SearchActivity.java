@@ -47,30 +47,6 @@ public class SearchActivity extends Activity {
         searchableItems = indexSearchableItems();
 
         recycler = findViewById(R.id.app_recycler);
-        recycler.setOnLongClickListener((l) -> false);
-
-
-        SwipeListener swipeListener = new SwipeListener();
-        gestureDetector = new GestureDetectorCompat(this, swipeListener);
-
-        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
-            if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
-                return true;
-            }
-
-            if (velocityY > 1000) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                if (getCurrentFocus() != null) {
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
-                finish();
-            }
-
-            return false;
-        });
-
-        recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-        findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         EditText searchBar = findViewById(R.id.search_bar);
 
@@ -134,6 +110,30 @@ public class SearchActivity extends Activity {
             finish();
             return true;
         });
+
+        SwipeListener swipeListener = new SwipeListener();
+        gestureDetector = new GestureDetectorCompat(this, swipeListener);
+
+        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
+            if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
+                return true;
+            }
+
+            if (velocityY > 1000) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                if (getCurrentFocus() != null) {
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                }
+                finish();
+            }
+
+            return false;
+        });
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
     }
 
     private ArrayList<NamedItem> indexSearchableItems() {

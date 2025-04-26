@@ -22,4 +22,5 @@
     <string name="widget_add_widget">widget</string>
     <string name="widget_new_row">new row</string>
     <string name="widget_add_to_row">add to row</string>
+    <string name="action_settings">settings</string>
 </resources>
