@@ -5,6 +5,7 @@
     <uses-permission android:name="BIND_APPWIDGET" />
     <uses-permission android:name="BIND_APPWIDGET_HOST" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -38,6 +39,9 @@
         <activity android:name=".EditFileIconActivity" />
         <activity android:name=".EditFileNameActivity" />
         <activity android:name=".WidgetSetupActivity" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:theme="@style/PreferenceTheme" />
     </application>
 
 </manifest>

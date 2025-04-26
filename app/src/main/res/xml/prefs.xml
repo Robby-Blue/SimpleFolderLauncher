@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="pref_search_auto_open_only"
+        android:summaryOff="results will not open automatically, even if there's only one option"
+        android:summaryOn="if there's only one search result, it will open automatically"
+        android:title="auto-open single search result"
+        app:iconSpaceReserved="false" />
+
+    <androidx.preference.DropDownPreference
+        android:defaultValue="start"
+        android:entries="@array/pref_app_alignment"
+        android:entryValues="@array/pref_app_alignment_values"
+        android:key="pref_app_text_alignment"
+        app:useSimpleSummaryProvider="true"
+
+        android:title="text alignment"
+        app:iconSpaceReserved="false" />
+
+</PreferenceScreen>

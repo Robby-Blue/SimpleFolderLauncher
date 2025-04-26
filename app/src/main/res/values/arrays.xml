@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_app_alignment">
+        <item>start</item>
+        <item>end</item>
+    </string-array>
+    <string-array name="pref_app_alignment_values">
+        <item>start</item>
+        <item>end</item>
+    </string-array>
+</resources>

@@ -39,6 +39,7 @@ import me.robbyblue.mylauncher.files.FileAdapter;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.search.SearchActivity;
+import me.robbyblue.mylauncher.settings.SettingsActivity;
 import me.robbyblue.mylauncher.widgets.WidgetElement;
 import me.robbyblue.mylauncher.widgets.WidgetLayout;
 import me.robbyblue.mylauncher.widgets.WidgetList;
@@ -253,6 +254,10 @@ public class MainActivity extends AppCompatActivity {
 
             addWidgetLauncher.launch(intent);
             return true;
+        }
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         if (item.getItemId() == R.id.action_change_icon) {
