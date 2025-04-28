@@ -101,11 +101,11 @@ public class SearchActivity extends Activity {
                     searchResults = search.searchDots(query);
                 } else {
                     searchResults = search.searchFiles(query, searchableItems);
-                }
-                if(autoOpenOnlyResult && searchResults.size() == 1){
-                    openFirstResult();
-                    finish();
-                    return;
+                    if (autoOpenOnlyResult && searchResults.size() == 1) {
+                        openFirstResult();
+                        finish();
+                        return;
+                    }
                 }
                 displaySearchResults();
             }
@@ -141,7 +141,7 @@ public class SearchActivity extends Activity {
         });
     }
 
-    private void openFirstResult(){
+    private void openFirstResult() {
         searchResults.get(0).open(this);
     }
 
