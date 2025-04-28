@@ -2,6 +2,7 @@ package me.robbyblue.mylauncher.search;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.core.view.GestureDetectorCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,6 +45,9 @@ public class SearchActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean autoOpenOnlyResult = prefs.getBoolean("pref_search_auto_open_only", false);
 
         searchableItems = indexSearchableItems();
 
@@ -97,6 +102,11 @@ public class SearchActivity extends Activity {
                 } else {
                     searchResults = search.searchFiles(query, searchableItems);
                 }
+                if(autoOpenOnlyResult && searchResults.size() == 1){
+                    openFirstResult();
+                    finish();
+                    return;
+                }
                 displaySearchResults();
             }
         });
@@ -106,7 +116,7 @@ public class SearchActivity extends Activity {
             if (searchResults == null) return false;
             if (searchResults.size() == 0) return false;
             searchBar.clearFocus();
-            searchResults.get(0).open(this);
+            openFirstResult();
             finish();
             return true;
         });
@@ -129,6 +139,10 @@ public class SearchActivity extends Activity {
 
             return false;
         });
+    }
+
+    private void openFirstResult(){
+        searchResults.get(0).open(this);
     }
 
     @Override
