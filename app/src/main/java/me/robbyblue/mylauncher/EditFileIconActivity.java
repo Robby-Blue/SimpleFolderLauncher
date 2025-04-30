@@ -34,7 +34,7 @@ public class EditFileIconActivity extends Activity {
         String folder = intent.getStringExtra("folder");
         int fileIndex = intent.getIntExtra("fileIndex", -1);
 
-        FileDataStorage fs = FileDataStorage.getInstance(this);
+        FileDataStorage fs = FileDataStorage.getInstance();
         ArrayList<FileNode> folderContents = fs.getFolderContents(folder).getFiles();
 
         FileNode file = folderContents.get(fileIndex);

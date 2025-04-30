@@ -1,0 +1,38 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "Folder1",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "App1",
+        "icon": {
+          "type": "app_icon",
+          "packageName": "test.package"
+        },
+        "type": "file",
+        "package": "test.package"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": [
+        {
+          "type": "widget",
+          "size": 1,
+          "widgetId": 29
+        },
+        {
+          "type": "widget",
+          "size": 1,
+          "widgetId": 30
+        }
+      ]
+    }
+  }
+}

@@ -30,6 +30,7 @@ import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> reloadFolderLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
         showFolder(currentFolder);
-        FileDataStorage.getInstance(this).storeFilesStructure();
+        FileDataStorage.getInstance().storeFilesStructure();
     });
 
     @Override
@@ -115,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> {
             AppsListCache.getInstance(this, folderPathView);
-            dataStorage = FileDataStorage.getInstance(this);
+            File structureFile = new File(getFilesDir(), "filesstructure.json");
+            dataStorage = FileDataStorage.getInstance(structureFile);
             runOnUiThread(() -> {
                 showFolder("~");
             });

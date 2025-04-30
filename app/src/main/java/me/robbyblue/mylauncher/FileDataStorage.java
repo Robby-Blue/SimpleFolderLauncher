@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,31 +31,57 @@ public class FileDataStorage {
 
     HashMap<String, Folder> files;
 
-    private FileDataStorage(Context context) {
-        structureFile = new File(context.getFilesDir(), "filesstructure.json");
-        this.files = loadFilesStructure();
+    private FileDataStorage(File structureFile) {
+        this.structureFile = structureFile;
+        if (this.structureFile != null && this.structureFile.exists()) {
+            try {
+                this.loadFromInputStream(new FileInputStream(this.structureFile));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            this.loadFromInputStream(null);
+        }
+    }
+
+    private FileDataStorage(InputStream inputStream) {
+        this.structureFile = null;
+        this.loadFromInputStream(inputStream);
     }
 
     public static FileDataStorage getInstance() {
         return instance;
     }
 
-    public static FileDataStorage getInstance(Context context) {
+    public static FileDataStorage getInstance(File file) {
         if (instance == null) {
-            instance = new FileDataStorage(context);
+            instance = new FileDataStorage(file);
         }
         return instance;
     }
 
-    public HashMap<String, Folder> loadFilesStructure() {
+    public static FileDataStorage getInstance(InputStream inputStream) {
+        if (instance == null) {
+            instance = new FileDataStorage(inputStream);
+        }
+        return instance;
+    }
+
+    public void loadFromInputStream(InputStream inputStream) {
         try {
             HashMap<String, Folder> files = new HashMap<>();
             files.put("~", new Folder("~", "~"));
 
-            if (!structureFile.exists()) return files;
+            if (inputStream == null) {
+                this.files = files;
+                return;
+            }
 
-            String fileContents = readFile(structureFile);
-            if (fileContents == null) return files;
+            String fileContents = readInputStream(inputStream);
+            if (fileContents == null) {
+                this.files = files;
+                return;
+            }
 
             JSONObject jsonData = new JSONObject(fileContents);
             Iterator<String> iterator = jsonData.keys();
@@ -71,10 +98,9 @@ public class FileDataStorage {
                     files.put(folderName, folder);
                 }
             }
-            return files;
+            this.files = files;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -107,8 +133,7 @@ public class FileDataStorage {
                 String name = fileNodeJson.getString("name");
                 if (fileNodeJson.getString("type").equals("file")) {
                     String packageName = fileNodeJson.getString("package");
-                    if (AppsListCache.getInstance().getAppByPackage(packageName) == null)
-                        continue;
+
                     IconData iconData = IconData.createIconDataFromJson(fileNodeJson);
                     files.add(new AppFile(name, packageName, iconData));
                 } else {
@@ -324,9 +349,9 @@ public class FileDataStorage {
         return new Folder("null", "/dev/null");
     }
 
-    private String readFile(File file) {
+    private String readInputStream(InputStream inputStream) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             StringBuilder res = new StringBuilder();
             String line;

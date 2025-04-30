@@ -157,7 +157,7 @@ public class SearchActivity extends Activity {
             items.addAll(search.indexSearchableItem(fileNode));
         }
         // folders
-        FileDataStorage fileSystem = FileDataStorage.getInstance(this);
+        FileDataStorage fileSystem = FileDataStorage.getInstance();
         ArrayList<Folder> folderNames = fileSystem.getFolders();
         for (Folder folder : folderNames) {
             items.addAll(search.indexSearchableItem(folder));
