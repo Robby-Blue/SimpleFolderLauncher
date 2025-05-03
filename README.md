@@ -10,7 +10,9 @@ The folder launcher is a minimalist, privacy respecting, linux-like file system 
 ## Usage
 The launcher editing UI is still rather unintuitive. This will get better in the future, if I ever get around to fixing it.
 
-- Long press the background to add files (apps), folders or widgets.
+- Long press the background to
+  - add files (apps), folders or widgets
+  - open the settings
 - Tap on an app or folder to
   - launch the app
   - view the folders contents
@@ -19,6 +21,9 @@ The launcher editing UI is still rather unintuitive. This will get better in the
   - rename it
   - change its icon
 - Swipe up for a simple seach bar. Use dots.
+- Swipe down to
+  - close the search page
+  - open the notifications/quick settings panel
 - Add per folder widgets,
   - normal widgets, taking up as much space as needed
   - row widgets, rows with height defined as a percentage of the folder width, containing widgets whose widths are defined as percentages of the row's width

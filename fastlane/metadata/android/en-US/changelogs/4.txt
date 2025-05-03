@@ -1,0 +1,8 @@
+Added
+- swipe down gestures:
+  - close the search page
+  - open the notification panel
+  - open the quick settings panel
+- settings page
+  - quick open only search result
+  - change text alignment
