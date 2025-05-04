@@ -147,6 +147,7 @@ public class SearchActivity extends Activity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        super.dispatchTouchEvent(event);
         return gestureDetector.onTouchEvent(event);
     }
 

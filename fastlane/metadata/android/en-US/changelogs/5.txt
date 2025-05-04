@@ -1,0 +1,2 @@
+Fixed
+- clicking on search results

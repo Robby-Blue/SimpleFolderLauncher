@@ -2,13 +2,18 @@ package me.robbyblue.mylauncher.files;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,6 +25,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
     MainActivity activity;
     ArrayList<FileNode> files;
+    String textAlignment = null;
 
     public FileAdapter(MainActivity activity, ArrayList<FileNode> files) {
         this.activity = activity;
@@ -28,6 +34,8 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
     @NonNull
     public FileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(parent.getContext());
+        this.textAlignment = prefs.getString("pref_app_text_alignment", "start");
         return new FileViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false));
     }
 
@@ -70,6 +78,24 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
             activity.setLongClickedID(position);
             return false;
         });
+
+        if (this.textAlignment.equals("end")) {
+            int margin = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 8, holder.view.getResources().getDisplayMetrics());
+
+            RelativeLayout.LayoutParams iconParams = (RelativeLayout.LayoutParams) holder.icon.getLayoutParams();
+            iconParams.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+            iconParams.setMarginStart(0);
+            iconParams.setMarginEnd(margin);
+            iconParams.addRule(RelativeLayout.START_OF, R.id.icon_view);
+            holder.fileLabel.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+
+            RelativeLayout.LayoutParams labelParams = (RelativeLayout.LayoutParams) holder.fileLabel.getLayoutParams();
+            labelParams.removeRule(RelativeLayout.END_OF);
+            labelParams.addRule(RelativeLayout.START_OF, R.id.icon_view);
+            labelParams.setMarginStart(0);
+            labelParams.setMarginEnd(margin);
+        }
     }
 
     @Override
