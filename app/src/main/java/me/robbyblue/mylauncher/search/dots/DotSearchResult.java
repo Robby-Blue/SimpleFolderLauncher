@@ -3,6 +3,7 @@ package me.robbyblue.mylauncher.search.dots;
 import android.graphics.Color;
 
 import me.robbyblue.mylauncher.files.icons.DotIconData;
+import me.robbyblue.mylauncher.files.icons.IconData;
 import me.robbyblue.mylauncher.search.SearchActivity;
 import me.robbyblue.mylauncher.search.SearchResult;
 
@@ -10,8 +11,8 @@ public abstract class DotSearchResult extends SearchResult {
 
     protected String prefix;
 
-    public DotSearchResult(String name, String prefix) {
-        super(name, new DotIconData(Color.parseColor("#EEEEEE")));
+    public DotSearchResult(String name, String prefix, IconData iconData) {
+        super(name, iconData);
         this.prefix = prefix;
     }
 

@@ -30,7 +30,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         SearchResult result = results.get(position);
 
-        holder.fileLabel.setText(result.getName());
+        holder.fileLabel.setText(result.getDiplayName(activity));
         holder.icon.setImageDrawable(result.getIconData().getIconDrawable());
 
         if (position == 0) {

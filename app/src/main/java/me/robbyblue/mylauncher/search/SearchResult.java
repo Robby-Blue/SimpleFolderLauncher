@@ -20,6 +20,10 @@ public abstract class SearchResult {
         return iconData;
     }
 
+    protected String getDiplayName(SearchActivity searchActivity) {
+        return getName();
+    }
+
     protected abstract int getTextColor();
 
     protected abstract void open(SearchActivity activity);

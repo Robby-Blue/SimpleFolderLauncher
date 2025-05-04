@@ -6,18 +6,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 
+import me.robbyblue.mylauncher.files.icons.DotIconData;
 import me.robbyblue.mylauncher.search.SearchActivity;
 
 public class YoutubeDotResult extends DotSearchResult {
 
 
     public YoutubeDotResult() {
-        super("YouTube", "y");
-    }
-
-    @Override
-    protected int getTextColor() {
-        return Color.parseColor("#EEEEEE");
+        super("YouTube", "y", new DotIconData(Color.parseColor("#c12025")));
     }
 
     @Override
@@ -42,6 +38,13 @@ public class YoutubeDotResult extends DotSearchResult {
         }
 
         activity.startActivity(intent);
+    }
+
+    @Override
+    protected String getDiplayName(SearchActivity activity) {
+        String query = getQueryWithoutDot(activity);
+        if (query.length() == 0) return this.getName();
+        return "'" + query + "' on yt";
     }
 
 }
