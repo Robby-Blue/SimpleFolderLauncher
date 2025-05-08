@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 searchLauncher.launch(intent);
             } else if (velocityY > 1000) {
                 String panelMethod = "expandNotificationsPanel";
-                if(velocityY > 5000) {
+                if (velocityY > 5000) {
                     panelMethod = "expandSettingsPanel";
                 }
 

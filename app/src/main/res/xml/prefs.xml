@@ -14,9 +14,30 @@
         android:entries="@array/pref_app_alignment"
         android:entryValues="@array/pref_app_alignment_values"
         android:key="pref_app_text_alignment"
-        app:useSimpleSummaryProvider="true"
-
         android:title="text alignment"
+
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true" />
+
+    <me.robbyblue.mylauncher.settings.ColorPreference
+        android:defaultValue="#EEEEEE"
+        android:key="pref_app_text_color"
+        android:summary="the text color used for the app names"
+        android:title="app text color"
+        app:iconSpaceReserved="false" />
+
+    <me.robbyblue.mylauncher.settings.ColorPreference
+        android:defaultValue="#00CC00"
+        android:key="pref_folder_text_color"
+        android:summary="the text color used for the folder names"
+        android:title="folder text color"
+        app:iconSpaceReserved="false" />
+
+    <me.robbyblue.mylauncher.settings.ColorPreference
+        android:defaultValue="#00CC00"
+        android:key="pref_back_text_color"
+        android:summary="the text color used for the back button (the ..)"
+        android:title="back text color"
         app:iconSpaceReserved="false" />
 
 </PreferenceScreen>
