@@ -5,11 +5,18 @@
     android:layout_marginHorizontal="32dp"
     android:orientation="vertical">
 
-    <View
+    <RelativeLayout
         android:id="@+id/color_view"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp" />
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/color_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
 
     <SeekBar
         android:id="@+id/red_seekbar"
