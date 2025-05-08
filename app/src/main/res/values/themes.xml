@@ -23,8 +23,6 @@
     </style>
 
     <style name="PreferenceTheme" parent="Theme.MyLauncher">
-        <item name="android:windowBackground">#90000000</item>
-        <item name="android:textColorPrimary">#E4E4E4</item>
-        <item name="android:textColorSecondary">#BCBCBC</item>
+        <item name="android:windowBackground">#90FFFFFF</item>
     </style>
 </resources>
