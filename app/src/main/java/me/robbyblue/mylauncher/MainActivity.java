@@ -109,9 +109,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recycler = findViewById(R.id.app_recycler);
-        recycler.setLayoutManager(new LinearLayoutManager(this));
-
         folderPathView = findViewById(R.id.folder_path_text);
 
         new Thread(() -> {
@@ -119,9 +116,14 @@ public class MainActivity extends AppCompatActivity {
             File structureFile = new File(getFilesDir(), "filesstructure.json");
             dataStorage = FileDataStorage.getInstance(structureFile);
             runOnUiThread(() -> {
-                showFolder("~");
+                setupUi();
             });
         }).start();
+    }
+
+    private void setupUi() {
+        recycler = findViewById(R.id.app_recycler);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
 
         registerForContextMenu(findViewById(R.id.background));
         registerForContextMenu(recycler);
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
         recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
         findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+
+        showFolder("~");
     }
 
     private void registerLauncherAppsCallback() {
@@ -209,6 +213,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (gestureDetector == null) {
+            return super.onTouchEvent(event);
+        }
         if (gestureDetector.onTouchEvent(event)) {
             return true;
         }
