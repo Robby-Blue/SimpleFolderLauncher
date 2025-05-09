@@ -1,0 +1,82 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "used_folder",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/used_folder": {
+    "files": [
+      {
+        "name": "used_subfolder",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/used_folder/used_subfolder": {
+    "files": [],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/folder": {
+    "files": [
+      {
+        "name": "subfolder",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/folder/subfolder": {
+    "files": [
+      {
+        "name": "subsubfolder",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/folder/subfolder/subsubfolder": {
+    "files": [],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  }
+}

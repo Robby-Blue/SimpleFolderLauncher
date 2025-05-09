@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
@@ -28,6 +30,9 @@ public class FileDataStorage {
     File structureFile;
 
     HashMap<String, Folder> files;
+
+    private FileDataStorage() {
+    }
 
     private FileDataStorage(File structureFile) {
         this.structureFile = structureFile;
@@ -48,6 +53,9 @@ public class FileDataStorage {
     }
 
     public static FileDataStorage getInstance() {
+        if (instance == null) {
+            instance = new FileDataStorage();
+        }
         return instance;
     }
 
@@ -59,7 +67,9 @@ public class FileDataStorage {
     }
 
     public static FileDataStorage getInstance(InputStream inputStream) {
-        instance = new FileDataStorage(inputStream);
+        if (instance == null) {
+            instance = new FileDataStorage(inputStream);
+        }
         return instance;
     }
 
@@ -94,10 +104,33 @@ public class FileDataStorage {
                     files.put(folderName, folder);
                 }
             }
+
             this.files = files;
+            clearOrphans();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void clearOrphans() {
+        ArrayList<String> usedPaths = new ArrayList<>();
+        Queue<String> uncheckedPaths = new LinkedList<>();
+
+        usedPaths.add("~");
+        uncheckedPaths.add("~");
+
+        while (uncheckedPaths.size() > 0) {
+            String testFullPath = uncheckedPaths.remove();
+            for (FileNode file : getFolderContents(testFullPath).getFiles()) {
+                if (!(file instanceof Folder)) continue;
+                String fullPath = ((Folder) file).getFullPath();
+                System.out.println(fullPath);
+                usedPaths.add(fullPath);
+                uncheckedPaths.add(fullPath);
+            }
+        }
+
+        files.keySet().removeIf(pathKey -> !usedPaths.contains(pathKey));
     }
 
     private Folder parseFolder(JSONObject folderContentsJson, String folderName) {

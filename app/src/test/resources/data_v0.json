@@ -34,5 +34,13 @@
         }
       ]
     }
+  },
+  "~/Folder1": {
+    "files": [],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
   }
 }
