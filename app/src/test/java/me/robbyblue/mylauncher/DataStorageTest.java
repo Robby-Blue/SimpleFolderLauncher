@@ -1,6 +1,8 @@
 package me.robbyblue.mylauncher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -25,6 +27,22 @@ public class DataStorageTest {
         assertTrue(homeFolder.getFiles().get(1).getIconData() instanceof AppIconData);
 
         assertEquals(2, homeFolder.getWidgetList().getChildren().size());
+    }
+
+    @Test
+    public void delete_recursive() {
+        InputStream input = getClass().getResourceAsStream("/data_delete_recursive.json");
+        FileDataStorage fs = FileDataStorage.getInstance(input);
+
+        assertNotEquals(null, fs.getFolderContents("~/folder"));
+        assertNotEquals(null, fs.getFolderContents("~/folder/subfolder"));
+        assertNotEquals(null, fs.getFolderContents("~/folder/subfolder/subsubfolder"));
+
+        fs.removeFile("~", 0);
+
+        assertNull(fs.getFolderContents("~/folder"));
+        assertNull(fs.getFolderContents("~/folder/subfolder"));
+        assertNull(fs.getFolderContents("~/folder/subfolder/subsubfolder"));
     }
 
 }

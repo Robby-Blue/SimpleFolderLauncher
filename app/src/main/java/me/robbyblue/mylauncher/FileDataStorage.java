@@ -1,7 +1,5 @@
 package me.robbyblue.mylauncher;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -61,9 +59,7 @@ public class FileDataStorage {
     }
 
     public static FileDataStorage getInstance(InputStream inputStream) {
-        if (instance == null) {
-            instance = new FileDataStorage(inputStream);
-        }
+        instance = new FileDataStorage(inputStream);
         return instance;
     }
 
@@ -314,11 +310,19 @@ public class FileDataStorage {
         ArrayList<FileNode> contents = getFolderContents(parentFolder).getFiles();
         FileNode item = contents.get(fileIndex);
         if (item instanceof Folder) {
-            // its a folder, remove not just the reference but also the folder itself
-            files.remove(((Folder) item).getFullPath());
+            removeFolder(((Folder) item).getFullPath());
         }
         contents.remove(fileIndex);
         storeFilesStructure();
+    }
+
+    private void removeFolder(String path) {
+        Folder folder = getFolderContents(path);
+        for (FileNode file : folder.getFiles()) {
+            if (!(file instanceof Folder)) continue;
+            removeFolder(((Folder) file).getFullPath());
+        }
+        files.remove((folder).getFullPath());
     }
 
     public void moveFile(String parentFolder, int initialIndex, int moveIndex) {
@@ -344,9 +348,9 @@ public class FileDataStorage {
         return getFolderContents(folder.getFullPath());
     }
 
-    public Folder getFolderContents(String folder) {
-        if (files.containsKey(folder)) return files.get(folder);
-        return new Folder("null", "/dev/null");
+    public Folder getFolderContents(String path) {
+        if (files.containsKey(path)) return files.get(path);
+        return null;
     }
 
     private String readInputStream(InputStream inputStream) {
@@ -367,6 +371,7 @@ public class FileDataStorage {
     }
 
     private void writeFile(File file, String content) {
+        if (file == null) return;
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
