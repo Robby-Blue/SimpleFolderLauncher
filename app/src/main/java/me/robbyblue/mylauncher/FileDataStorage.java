@@ -124,7 +124,6 @@ public class FileDataStorage {
             for (FileNode file : getFolderContents(testFullPath).getFiles()) {
                 if (!(file instanceof Folder)) continue;
                 String fullPath = ((Folder) file).getFullPath();
-                System.out.println(fullPath);
                 usedPaths.add(fullPath);
                 uncheckedPaths.add(fullPath);
             }
