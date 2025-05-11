@@ -18,11 +18,11 @@ import me.robbyblue.mylauncher.files.AppFile;
 public class AppsListCache {
 
     private static AppsListCache instance;
-    TextView statusViev;
+    TextView statusView;
     ArrayList<AppData> apps = new ArrayList<>();
 
     private AppsListCache(Context context, TextView view) {
-        this.statusViev = view;
+        this.statusView = view;
         loadApps(context);
     }
 
@@ -34,9 +34,6 @@ public class AppsListCache {
     }
 
     public static AppsListCache getInstance() {
-        if (instance == null) {
-            return null;
-        }
         return instance;
     }
 
@@ -57,7 +54,7 @@ public class AppsListCache {
             apps.add(file);
 
             String text = appIndex + "/" + totalApps + " " + packageName;
-            ((Activity) context).runOnUiThread(() -> statusViev.setText(text));
+            ((Activity) context).runOnUiThread(() -> statusView.setText(text));
 
             appIndex++;
         }

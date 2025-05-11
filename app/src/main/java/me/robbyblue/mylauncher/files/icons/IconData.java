@@ -20,6 +20,8 @@ public abstract class IconData {
                     return new AppIconData(iconJson.getString("packageName"));
                 case "dot_icon":
                     return new DotIconData(iconJson.getInt("color"));
+                case "iconpack_icon":
+                    return new IconPackIconData(iconJson.getString("packageName"), iconJson.getString("drawableName"));
                 case "no_icon":
                 default:
                     return new NoIconData();

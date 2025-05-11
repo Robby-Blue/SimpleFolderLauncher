@@ -39,6 +39,8 @@ import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileAdapter;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
+import me.robbyblue.mylauncher.files.icons.selection.EditFileIconActivity;
+import me.robbyblue.mylauncher.files.icons.selection.IconPackManager;
 import me.robbyblue.mylauncher.search.SearchActivity;
 import me.robbyblue.mylauncher.settings.SettingsActivity;
 import me.robbyblue.mylauncher.widgets.WidgetElement;
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         folderPathView = findViewById(R.id.folder_path_text);
 
         new Thread(() -> {
+            IconPackManager.getInstance(getPackageManager());
             AppsListCache.getInstance(this, folderPathView);
             File structureFile = new File(getFilesDir(), "filesstructure.json");
             dataStorage = FileDataStorage.getInstance(structureFile);

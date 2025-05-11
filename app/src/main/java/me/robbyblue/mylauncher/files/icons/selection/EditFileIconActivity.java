@@ -64,6 +64,8 @@ public class EditFileIconActivity extends Activity {
 
                 options.add(new IconOption(numbers[i] + " color", dotIconData));
             }
+
+            options.addAll(IconPackManager.getInstance().getIconOptions(packageName));
         }
 
         options.add(new IconOption("no icon", new NoIconData()));
