@@ -4,7 +4,7 @@
 
     <uses-permission android:name="BIND_APPWIDGET" />
     <uses-permission android:name="BIND_APPWIDGET_HOST" />
-    <uses-permission android:name="EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <queries>
         <intent>

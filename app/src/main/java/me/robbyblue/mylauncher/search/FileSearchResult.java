@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Color;
+import android.widget.Toast;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
@@ -48,7 +49,11 @@ public class FileSearchResult extends SearchResult {
 
             ShortcutInfo shortcutInfo = shortcutAppFile.getShortcutInfo();
 
-            launcher.startShortcut(shortcutInfo, null, null);
+            try {
+                launcher.startShortcut(shortcutInfo, null, null);
+            } catch (Exception e) {
+                Toast.makeText(activity.getBaseContext(), "couldn't open shortcut " + e, Toast.LENGTH_LONG).show();
+            }
         } else if (fileNode instanceof AppFile) {
             AppFile appFile = (AppFile) fileNode;
             Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(appFile.getPackageName());

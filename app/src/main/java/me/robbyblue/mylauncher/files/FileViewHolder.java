@@ -11,13 +11,15 @@ import me.robbyblue.mylauncher.R;
 public class FileViewHolder extends RecyclerView.ViewHolder {
 
     public View view;
-    public TextView fileLabel;
+    public TextView nameLabel;
+    public TextView appLabel;
     public ImageView icon;
 
     public FileViewHolder(View itemView) {
         super(itemView);
         view = itemView;
-        fileLabel = itemView.findViewById(R.id.name_label);
+        nameLabel = itemView.findViewById(R.id.name_label);
+        appLabel = itemView.findViewById(R.id.app_label);
         icon = itemView.findViewById(R.id.icon_view);
     }
 }

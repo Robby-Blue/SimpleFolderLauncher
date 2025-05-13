@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import me.robbyblue.mylauncher.R;
+import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.FileViewHolder;
+import me.robbyblue.mylauncher.files.ShortcutAppFile;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
@@ -30,7 +32,18 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
     public void onBindViewHolder(@NonNull FileViewHolder holder, int position) {
         SearchResult result = results.get(position);
 
-        holder.fileLabel.setText(result.getDiplayName(activity));
+        String label = result.getDiplayName(activity);
+
+        if (result instanceof FileSearchResult) {
+            FileNode fileNode = ((FileSearchResult) result).getFileNode();
+            if (fileNode instanceof ShortcutAppFile) {
+                ShortcutAppFile shortcutAppFile = (ShortcutAppFile) fileNode;
+                label = shortcutAppFile.getShortcutLabel();
+                holder.appLabel.setText(shortcutAppFile.getAppName());
+            }
+        }
+
+        holder.nameLabel.setText(label);
         holder.icon.setImageDrawable(result.getIconData().getIconDrawable());
 
         if (position == 0) {
@@ -39,7 +52,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
             holder.view.setBackgroundResource(R.drawable.transparent_button_bg);
         }
 
-        holder.fileLabel.setTextColor(result.getTextColor());
+        holder.nameLabel.setTextColor(result.getTextColor());
 
         holder.view.setOnClickListener((l) -> result.open(activity));
     }
