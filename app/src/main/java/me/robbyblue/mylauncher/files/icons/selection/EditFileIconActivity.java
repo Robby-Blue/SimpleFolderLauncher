@@ -1,4 +1,4 @@
-package me.robbyblue.mylauncher;
+package me.robbyblue.mylauncher.files.icons.selection;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,23 +7,26 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.robbyblue.mylauncher.FileDataStorage;
+import me.robbyblue.mylauncher.R;
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
-import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.files.icons.AppIconData;
 import me.robbyblue.mylauncher.files.icons.DotIconData;
 import me.robbyblue.mylauncher.files.icons.IconData;
 import me.robbyblue.mylauncher.files.icons.NoIconData;
 
 public class EditFileIconActivity extends Activity {
+
+    FileNode file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,57 +40,44 @@ public class EditFileIconActivity extends Activity {
         FileDataStorage fs = FileDataStorage.getInstance();
         ArrayList<FileNode> folderContents = fs.getFolderContents(folder).getFiles();
 
-        FileNode file = folderContents.get(fileIndex);
+        this.file = folderContents.get(fileIndex);
 
-        Button appIconButton = findViewById(R.id.select_icon_button);
-        Button primaryColorButton = findViewById(R.id.select_primary_color_button);
-        Button secondaryColorButton = findViewById(R.id.select_secondary_color_button);
-        Button tertiaryColorButton = findViewById(R.id.select_tertiary_color_button);
-        Button noIconButton = findViewById(R.id.select_no_icon_button);
+        ArrayList<IconOption> options = new ArrayList<>();
 
-        ImageView appIconImage = findViewById(R.id.icon_image);
-        ImageView primaryColorImage = findViewById(R.id.primary_color_image);
-        ImageView secondaryColorImage = findViewById(R.id.secondary_color_image);
-        ImageView tertiaryColorImage = findViewById(R.id.tertiary_color_image);
-
-        if (file instanceof Folder) {
-            // its a folder, hide app icon related buttons
-            appIconButton.setVisibility(View.GONE);
-            primaryColorButton.setVisibility(View.GONE);
-            secondaryColorButton.setVisibility(View.GONE);
-            tertiaryColorButton.setVisibility(View.GONE);
-        } else {
+        if (file instanceof AppFile) {
             String packageName = ((AppFile) file).getPackageName();
             Drawable iconDrawable = new AppIconData(packageName).getIconDrawable();
 
             HashMap<Integer, Integer> colorFrequencies = getColorFrequencies(iconDrawable);
             ArrayList<Integer> mostCommonColors = getMostCommonColors(colorFrequencies);
 
-            appIconImage.setImageDrawable(iconDrawable);
+            options.add(new IconOption("app icon", new AppIconData(packageName)));
 
-            ImageView[] imageViews = {primaryColorImage, secondaryColorImage, tertiaryColorImage};
-            Button[] buttons = {primaryColorButton, secondaryColorButton, tertiaryColorButton};
+            String[] numbers = {"primary", "secondary", "tertiary"};
 
-            for (int i = 0; i < imageViews.length; i++) {
-                Button button = buttons[i];
+            for (int i = 0; i < numbers.length; i++) {
                 if (i >= mostCommonColors.size()) {
-                    button.setVisibility(View.GONE);
                     break;
                 }
 
-                ImageView imageView = imageViews[i];
                 DotIconData dotIconData = new DotIconData(mostCommonColors.get(i));
-                Drawable drawable = dotIconData.getIconDrawable();
-                imageView.setImageDrawable(drawable);
 
-                button.setOnClickListener((e) -> setIcon(file, dotIconData));
+                options.add(new IconOption(numbers[i] + " color", dotIconData));
             }
-            appIconButton.setOnClickListener((e) -> setIcon(file, new AppIconData(packageName)));
+
+            options.addAll(IconPackManager.getInstance().getIconOptions(packageName));
         }
-        noIconButton.setOnClickListener((e) -> setIcon(file, new NoIconData()));
+
+        options.add(new IconOption("no icon", new NoIconData()));
+
+        IconOptionAdapter adapter = new IconOptionAdapter(this, options);
+
+        RecyclerView recycler = findViewById(R.id.options_recycler);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
+        recycler.setAdapter(adapter);
     }
 
-    private void setIcon(FileNode file, IconData iconData) {
+    public void setIcon(IconData iconData) {
         file.setIconData(iconData);
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_OK, resultIntent);

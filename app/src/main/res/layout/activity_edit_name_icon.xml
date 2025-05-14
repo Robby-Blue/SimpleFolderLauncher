@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context=".EditFileIconActivity">
+    tools:context=".EditFileNameActivity">
 
     <EditText
         android:id="@+id/new_name_field"
