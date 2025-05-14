@@ -1,43 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="pref_search_auto_open_only"
-        android:summaryOff="results will not open automatically, even if there's only one option"
-        android:summaryOn="if there's only one search result, it will open automatically"
-        android:title="auto-open single search result"
-        app:iconSpaceReserved="false" />
 
-    <androidx.preference.DropDownPreference
-        android:defaultValue="start"
-        android:entries="@array/pref_app_alignment"
-        android:entryValues="@array/pref_app_alignment_values"
-        android:key="pref_app_text_alignment"
-        android:title="text alignment"
+    <PreferenceCategory
+        android:title="general"
+        app:iconSpaceReserved="false">
+        <androidx.preference.DropDownPreference
+            android:defaultValue="start"
+            android:entries="@array/pref_app_alignment"
+            android:entryValues="@array/pref_app_alignment_values"
+            android:key="pref_app_text_alignment"
+            android:title="text alignment"
 
-        app:iconSpaceReserved="false"
-        app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
-    <me.robbyblue.mylauncher.settings.ColorPreference
-        android:defaultValue="#EEEEEE"
-        android:key="pref_app_text_color"
-        android:summary="the text color used for the app names"
-        android:title="app text color"
-        app:iconSpaceReserved="false" />
+    <PreferenceCategory
+        android:title="search"
+        app:iconSpaceReserved="false">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_search_auto_open_only"
+            android:summaryOff="results will not open automatically, even if there's only one option"
+            android:summaryOn="if there's only one search result, it will open automatically"
+            android:title="auto-open single result"
+            app:iconSpaceReserved="false" />
 
-    <me.robbyblue.mylauncher.settings.ColorPreference
-        android:defaultValue="#00CC00"
-        android:key="pref_folder_text_color"
-        android:summary="the text color used for the folder names"
-        android:title="folder text color"
-        app:iconSpaceReserved="false" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_search_show_shortcuts"
+            android:summaryOff="results will contains apps' shortcuts"
+            android:summaryOn="results won't contains apps' shortcuts"
+            android:title="show shortcuts"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
 
-    <me.robbyblue.mylauncher.settings.ColorPreference
-        android:defaultValue="#00CC00"
-        android:key="pref_back_text_color"
-        android:summary="the text color used for the back button (the ..)"
-        android:title="back text color"
-        app:iconSpaceReserved="false" />
+    <PreferenceCategory
+        android:title="colors"
+        app:iconSpaceReserved="false">
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#EEEEEE"
+            android:key="pref_app_text_color"
+            android:summary="the text color used for the app names"
+            android:title="app text color"
+            app:iconSpaceReserved="false" />
 
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#00CC00"
+            android:key="pref_folder_text_color"
+            android:summary="the text color used for the folder names"
+            android:title="folder text color"
+            app:iconSpaceReserved="false" />
+
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#00CC00"
+            android:key="pref_back_text_color"
+            android:summary="the text color used for the back button (the ..)"
+            android:title="back text color"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
 </PreferenceScreen>
