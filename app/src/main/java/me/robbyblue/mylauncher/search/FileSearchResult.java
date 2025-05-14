@@ -1,11 +1,16 @@
 package me.robbyblue.mylauncher.search;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherApps;
+import android.content.pm.ShortcutInfo;
 import android.graphics.Color;
+import android.widget.Toast;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
+import me.robbyblue.mylauncher.files.ShortcutAppFile;
 
 public class FileSearchResult extends SearchResult {
 
@@ -34,7 +39,22 @@ public class FileSearchResult extends SearchResult {
         if (fileNode instanceof Folder) {
             String fullPath = ((Folder) fileNode).getFullPath();
             activity.showFolder(fullPath);
-        } else {
+        }
+        if (fileNode instanceof ShortcutAppFile) {
+            ShortcutAppFile shortcutAppFile = (ShortcutAppFile) fileNode;
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
+                return;
+            }
+            LauncherApps launcher = (LauncherApps) activity.getBaseContext().getSystemService(Context.LAUNCHER_APPS_SERVICE);
+
+            ShortcutInfo shortcutInfo = shortcutAppFile.getShortcutInfo();
+
+            try {
+                launcher.startShortcut(shortcutInfo, null, null);
+            } catch (Exception e) {
+                Toast.makeText(activity.getBaseContext(), "couldn't open shortcut " + e, Toast.LENGTH_LONG).show();
+            }
+        } else if (fileNode instanceof AppFile) {
             AppFile appFile = (AppFile) fileNode;
             Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(appFile.getPackageName());
             activity.startActivity(launchIntent);

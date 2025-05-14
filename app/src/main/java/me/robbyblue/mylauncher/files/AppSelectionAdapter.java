@@ -36,7 +36,7 @@ public class AppSelectionAdapter extends RecyclerView.Adapter<FileViewHolder> {
         holder.setIsRecyclable(false);
         AppFile file = apps.get(position);
 
-        holder.fileLabel.setText(file.getName());
+        holder.nameLabel.setText(file.getName());
         holder.icon.setImageDrawable(file.getIconData().getIconDrawable());
 
         holder.view.setOnClickListener((v) -> activity.select(position));

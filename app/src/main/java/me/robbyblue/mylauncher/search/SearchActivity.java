@@ -48,8 +48,9 @@ public class SearchActivity extends Activity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean autoOpenOnlyResult = prefs.getBoolean("pref_search_auto_open_only", false);
+        boolean showShortcuts = prefs.getBoolean("pref_search_show_shortcuts", true);
 
-        searchableItems = indexSearchableItems();
+        searchableItems = indexSearchableItems(showShortcuts);
 
         recycler = findViewById(R.id.app_recycler);
 
@@ -151,12 +152,22 @@ public class SearchActivity extends Activity {
         return gestureDetector.onTouchEvent(event);
     }
 
-    private ArrayList<NamedItem> indexSearchableItems() {
+    private ArrayList<NamedItem> indexSearchableItems(boolean showShortcuts) {
         // add apps by their actual names
         ArrayList<NamedItem> items = new ArrayList<>();
-        for (FileNode fileNode : AppsListCache.getInstance().getAppsFiles()) {
+
+        ArrayList<AppFile> appList = new ArrayList<>();
+
+        if (showShortcuts) {
+            appList.addAll(AppsListCache.getInstance().getAppsFilesWithShortcuts());
+        } else {
+            appList.addAll(AppsListCache.getInstance().getAppsFiles());
+        }
+
+        for (FileNode fileNode : appList) {
             items.addAll(search.indexSearchableItem(fileNode));
         }
+
         // folders
         FileDataStorage fileSystem = FileDataStorage.getInstance();
         ArrayList<Folder> folderNames = fileSystem.getFolders();

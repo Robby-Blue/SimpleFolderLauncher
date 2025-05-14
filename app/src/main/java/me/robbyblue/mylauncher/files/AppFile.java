@@ -7,12 +7,12 @@ public class AppFile extends FileNode {
 
     private final String packageName;
 
-    public AppFile(String name, String packageName, IconData icon){
+    public AppFile(String name, String packageName, IconData icon) {
         super(name, icon);
         this.packageName = packageName;
     }
 
-    public AppFile(String name, String packageName){
+    public AppFile(String name, String packageName) {
         super(name, new AppIconData(packageName));
         this.packageName = packageName;
     }

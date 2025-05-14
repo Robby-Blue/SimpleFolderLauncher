@@ -51,16 +51,16 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
         holder.icon.setImageDrawable(file.getIconData().getIconDrawable());
 
-        holder.fileLabel.setText(file.getName());
+        holder.nameLabel.setText(file.getName());
 
         if (file instanceof Folder) {
             if (file.getName().equals("..")) {
-                holder.fileLabel.setTextColor(backTextColor);
+                holder.nameLabel.setTextColor(backTextColor);
             } else {
-                holder.fileLabel.setTextColor(folderTextColor);
+                holder.nameLabel.setTextColor(folderTextColor);
             }
         } else {
-            holder.fileLabel.setTextColor(appTextColor);
+            holder.nameLabel.setTextColor(appTextColor);
         }
 
         holder.view.setOnClickListener((v) -> {
@@ -98,13 +98,20 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
             iconParams.setMarginStart(0);
             iconParams.setMarginEnd(margin);
             iconParams.addRule(RelativeLayout.START_OF, R.id.icon_view);
-            holder.fileLabel.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+            holder.nameLabel.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
 
-            RelativeLayout.LayoutParams labelParams = (RelativeLayout.LayoutParams) holder.fileLabel.getLayoutParams();
+            RelativeLayout.LayoutParams labelParams = (RelativeLayout.LayoutParams) holder.nameLabel.getLayoutParams();
             labelParams.removeRule(RelativeLayout.END_OF);
             labelParams.addRule(RelativeLayout.START_OF, R.id.icon_view);
             labelParams.setMarginStart(0);
             labelParams.setMarginEnd(margin);
+
+            RelativeLayout.LayoutParams appParams = (RelativeLayout.LayoutParams) holder.appLabel.getLayoutParams();
+            appParams.removeRule(RelativeLayout.END_OF);
+            appParams.addRule(RelativeLayout.START_OF, R.id.name_label);
+            appParams.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+            appParams.setMarginEnd(0);
+            appParams.setMarginStart(margin);
         }
     }
 

@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Process;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -53,7 +56,10 @@ public class AppsListCache {
             String label = ri.loadLabel(pm).toString();
             String packageName = ri.activityInfo.packageName;
             Drawable icon = ri.activityInfo.loadIcon(pm);
-            AppData file = new AppData(label, packageName, icon);
+
+            List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
+
+            AppData file = new AppData(label, packageName, icon, shortcutInfos);
             apps.add(file);
 
             String text = appIndex + "/" + totalApps + " " + packageName;
@@ -64,15 +70,30 @@ public class AppsListCache {
         apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
     }
 
+    public List<ShortcutInfo> getShortcuts(Context context, String packageName) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
+            return new ArrayList<>();
+        }
+        LauncherApps launcher = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+
+        int flags = LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC | LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST | LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED;
+        LauncherApps.ShortcutQuery q = new LauncherApps.ShortcutQuery();
+        q.setPackage(packageName);
+        q.setQueryFlags(flags);
+
+        return launcher.getShortcuts(q, Process.myUserHandle());
+    }
+
     public void indexPackage(String packageName, Context context) {
         try {
             PackageManager pm = context.getPackageManager();
             ApplicationInfo info = pm.getApplicationInfo(packageName, 0);
             String appName = info.loadLabel(pm).toString();
             Drawable icon = info.loadIcon(pm);
+            List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
 
             removePackage(packageName);
-            apps.add(new AppData(appName, packageName, icon));
+            apps.add(new AppData(appName, packageName, icon, shortcutInfos));
             apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -93,6 +114,14 @@ public class AppsListCache {
         ArrayList<AppFile> appFiles = new ArrayList<>();
         for (AppData appData : this.getApps()) {
             appFiles.add(appData.toAppFile());
+        }
+        return appFiles;
+    }
+
+    public ArrayList<AppFile> getAppsFilesWithShortcuts() {
+        ArrayList<AppFile> appFiles = new ArrayList<>();
+        for (AppData appData : this.getApps()) {
+            appFiles.addAll(appData.toAppFileWithShortcuts());
         }
         return appFiles;
     }

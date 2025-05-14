@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="see_trough">#20FFFFFF</color>
     <color name="selected">#50FFFFFF</color>
+    <color name="secondary_text">#757575</color>
 </resources>
