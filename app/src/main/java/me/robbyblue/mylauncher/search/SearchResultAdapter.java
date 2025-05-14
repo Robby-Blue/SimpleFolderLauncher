@@ -26,7 +26,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
     ArrayList<SearchResult> results;
 
     String textAlignment;
-    int appTextColor, folderTextColor;
+    int appTextColor, shortcutTextColor, folderTextColor;
 
     public SearchResultAdapter(SearchActivity activity, ArrayList<SearchResult> results) {
         this.activity = activity;
@@ -38,6 +38,7 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(parent.getContext());
         this.textAlignment = prefs.getString("pref_app_text_alignment", "start");
         this.appTextColor = prefs.getInt("pref_app_text_color", Color.parseColor("#EEEEEE"));
+        this.shortcutTextColor = prefs.getInt("pref_shortcut_text_color", Color.parseColor("#EEEEEE"));
         this.folderTextColor = prefs.getInt("pref_folder_text_color", Color.parseColor("#00CC00"));
         return new FileViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file, parent, false));
     }
@@ -59,7 +60,11 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
             if (fileNode instanceof Folder) {
                 holder.nameLabel.setTextColor(folderTextColor);
             } else {
-                holder.nameLabel.setTextColor(appTextColor);
+                if (fileNode instanceof ShortcutAppFile) {
+                    holder.nameLabel.setTextColor(shortcutTextColor);
+                } else {
+                    holder.nameLabel.setTextColor(appTextColor);
+                }
             }
         } else {
             holder.nameLabel.setTextColor(result.getTextColor());

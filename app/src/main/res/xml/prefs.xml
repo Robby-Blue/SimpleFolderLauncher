@@ -54,6 +54,13 @@
             app:iconSpaceReserved="false" />
 
         <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#EEEEEE"
+            android:key="pref_shortcut_text_color"
+            android:summary="the text color used for shortcuts"
+            android:title="shortcut text color"
+            app:iconSpaceReserved="false" />
+
+        <me.robbyblue.mylauncher.settings.ColorPreference
             android:defaultValue="#00CC00"
             android:key="pref_back_text_color"
             android:summary="the text color used for the back button (the ..)"
