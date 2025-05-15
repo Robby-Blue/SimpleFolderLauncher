@@ -1,0 +1,12 @@
+Added
+- allow custom text colors
+- shortcuts in search
+- icon pack support
+
+Improved
+- add color and descriptions to Dots
+- ui consistency in search
+
+Fixed
+- remove parentless folders
+- crash by premature interaction
