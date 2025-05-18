@@ -1,0 +1,13 @@
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  lane :screenshots do
+    gradle(task: "clean assembleDebug assembleAndroidTest")
+    capture_android_screenshots
+  end
+end
