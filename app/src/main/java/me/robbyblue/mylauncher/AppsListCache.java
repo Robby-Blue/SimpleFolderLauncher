@@ -73,6 +73,10 @@ public class AppsListCache {
         }
         LauncherApps launcher = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 
+        if(!launcher.hasShortcutHostPermission()){
+            return new ArrayList<>();
+        }
+
         int flags = LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC | LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST | LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED;
         LauncherApps.ShortcutQuery q = new LauncherApps.ShortcutQuery();
         q.setPackage(packageName);
