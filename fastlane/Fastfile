@@ -9,5 +9,6 @@ platform :android do
   lane :screenshots do
     gradle(task: "clean assembleDebug assembleAndroidTest")
     capture_android_screenshots
+    sh("python3 scripts/postprocess_images.py")
   end
 end

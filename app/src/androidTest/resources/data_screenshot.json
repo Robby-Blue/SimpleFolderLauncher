@@ -1,0 +1,50 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "school",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "media",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "games",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "discord",
+        "icon": {
+          "type": "dot_icon",
+          "color": 4287405823
+        },
+        "type": "file",
+        "package": "example"
+      },
+      {
+        "name": "youtube",
+        "icon": {
+          "type": "dot_icon",
+          "color": 4294901760
+        },
+        "type": "file",
+        "package": "com.google.android.youtube"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  }
+}

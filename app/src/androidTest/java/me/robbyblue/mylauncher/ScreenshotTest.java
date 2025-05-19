@@ -15,6 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.InputStream;
+
 import me.robbyblue.mylauncher.search.SearchActivity;
 import me.robbyblue.mylauncher.settings.SettingsActivity;
 import tools.fastlane.screengrab.Screengrab;
@@ -27,11 +29,13 @@ public class ScreenshotTest {
     public final LocaleTestRule localeTestRule = new LocaleTestRule();
 
     @Test
-    public void takeScreenshotOfMainScreen() {
+    public void takeScreenshotOfMainScreen() throws InterruptedException {
+        InputStream input = getClass().getResourceAsStream("/data_screenshot.json");
+        FileDataStorage fs = FileDataStorage.getInstance();
+        fs.loadFromInputStream(input);
         ActivityScenario.launch(MainActivity.class);
 
-        onView(withText("~"))
-                .check(matches(isDisplayed()));
+        Thread.sleep(1000);
 
         Screengrab.screenshot("main_screen");
     }
