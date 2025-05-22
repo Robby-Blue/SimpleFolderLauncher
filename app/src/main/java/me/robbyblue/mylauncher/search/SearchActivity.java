@@ -3,6 +3,8 @@ package me.robbyblue.mylauncher.search;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -50,11 +52,15 @@ public class SearchActivity extends Activity {
         boolean autoOpenOnlyResult = prefs.getBoolean("pref_search_auto_open_only", false);
         boolean showShortcuts = prefs.getBoolean("pref_search_show_shortcuts", true);
 
+        int appTextColor = prefs.getInt("pref_app_text_color", Color.parseColor("#EEEEEE"));
+
         searchableItems = indexSearchableItems(showShortcuts);
 
         recycler = findViewById(R.id.app_recycler);
 
         EditText searchBar = findViewById(R.id.search_bar);
+        searchBar.setTextColor(appTextColor);
+        searchBar.getBackground().setColorFilter(0, PorterDuff.Mode.SRC_IN);
 
         layoutManager = new LinearLayoutManager(this) {
             @Override
