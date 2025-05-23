@@ -19,6 +19,7 @@ import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.FileViewHolder;
 import me.robbyblue.mylauncher.files.Folder;
 import me.robbyblue.mylauncher.files.ShortcutAppFile;
+import me.robbyblue.mylauncher.search.dots.DotSearchResult;
 
 public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
@@ -67,7 +68,11 @@ public class SearchResultAdapter extends RecyclerView.Adapter<FileViewHolder> {
                 }
             }
         } else {
-            holder.nameLabel.setTextColor(result.getTextColor());
+            if (result instanceof DotSearchResult) {
+                holder.nameLabel.setTextColor(appTextColor);
+            } else {
+                holder.nameLabel.setTextColor(result.getTextColor());
+            }
         }
 
         holder.nameLabel.setText(label);

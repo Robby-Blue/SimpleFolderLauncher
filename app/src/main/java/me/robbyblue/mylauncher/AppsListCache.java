@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 import android.widget.TextView;
 
@@ -73,7 +74,7 @@ public class AppsListCache {
         }
         LauncherApps launcher = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 
-        if(!launcher.hasShortcutHostPermission()){
+        if (!launcher.hasShortcutHostPermission()) {
             return new ArrayList<>();
         }
 
@@ -134,4 +135,26 @@ public class AppsListCache {
         return null;
     }
 
+    public void loadTestApps() {
+        ArrayList<AppData> apps = new ArrayList<>();
+
+        AppData currentYoutube = getAppByPackage("com.google.android.youtube");
+
+        ArrayList<ShortcutInfo> shortcuts = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+                    .setShortLabel("Explore")
+                    .build());
+            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+                    .setShortLabel("Search")
+                    .build());
+            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+                    .setShortLabel("Subscriptions")
+                    .build());
+        }
+
+        apps.add(new AppData("Youtube", "com.google.android.youtube", currentYoutube.getIcon(), shortcuts));
+
+        this.apps = apps;
+    }
 }

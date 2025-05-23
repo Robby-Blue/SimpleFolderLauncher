@@ -1,0 +1,14 @@
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  lane :screenshots do
+    gradle(task: "clean assembleDebug assembleAndroidTest")
+    capture_android_screenshots
+    sh("python3 scripts/postprocess_images.py")
+  end
+end

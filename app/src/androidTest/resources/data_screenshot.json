@@ -1,0 +1,122 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "school",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "media",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "games",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "discord",
+        "icon": {
+          "type": "dot_icon",
+          "color": 4287405823
+        },
+        "type": "file",
+        "package": "example"
+      },
+      {
+        "name": "youtube",
+        "icon": {
+          "type": "dot_icon",
+          "color": 4294901760
+        },
+        "type": "file",
+        "package": "com.google.android.youtube"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/media": {
+    "files": [
+      {
+        "name": "spyware",
+        "icon": {
+          "type": "dot_icon",
+          "color": -12458145
+        },
+        "type": "file",
+        "package": "com.whatsapp"
+      },
+      {
+        "name": "zdf",
+        "icon": {
+          "type": "dot_icon",
+          "color": -426984
+        },
+        "type": "file",
+        "package": "com.zdf.android.mediathek"
+      },
+      {
+        "name": "signal",
+        "icon": {
+          "type": "dot_icon",
+          "color": -12945680
+        },
+        "type": "file",
+        "package": "org.thoughtcrime.securesms"
+      },
+      {
+        "name": "twitch",
+        "icon": {
+          "type": "dot_icon",
+          "color": -7256065
+        },
+        "type": "file",
+        "package": "tv.twitch.android.app"
+      },
+      {
+        "name": "träwell",
+        "icon": {
+          "type": "dot_icon",
+          "color": -12627531
+        },
+        "type": "file",
+        "package": "de.hbch.traewelling"
+      },
+      {
+        "name": "spotify",
+        "icon": {
+          "type": "dot_icon",
+          "color": -14829228
+        },
+        "type": "file",
+        "package": "com.spotify.music"
+      },
+      {
+        "name": "mastodon",
+        "icon": {
+          "type": "dot_icon",
+          "color": -14144457
+        },
+        "type": "file",
+        "package": "org.joinmastodon.android.moshinda"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  }
+}
