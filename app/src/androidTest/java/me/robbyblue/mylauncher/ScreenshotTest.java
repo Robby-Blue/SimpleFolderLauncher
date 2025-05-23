@@ -3,6 +3,8 @@ package me.robbyblue.mylauncher;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -45,7 +47,22 @@ public class ScreenshotTest {
     public final LocaleTestRule localeTestRule = new LocaleTestRule();
 
     @BeforeClass
-    public static void beforeAll() {
+    public static void beforeAll() throws InterruptedException {
+        InputStream dataInputStream = ScreenshotTest.class.getResourceAsStream("/data_screenshot.json");
+        FileDataStorage fs = FileDataStorage.getInstance();
+        fs.loadFromInputStream(dataInputStream);
+
+        ActivityScenario.launch(MainActivity.class);
+
+        while (true) {
+            try {
+                onView(withText("~")).check(matches(isDisplayed()));
+                break;
+            } catch (Exception e) {
+                Thread.sleep(50);
+            }
+        }
+
         new CleanStatusBar()
                 .setClock("0800")
                 .setShowNotifications(false)
@@ -58,17 +75,12 @@ public class ScreenshotTest {
     }
 
     @Test
-    public void takeScreenshotOfHomeFolder() throws InterruptedException {
+    public void takeScreenshotOfHomeFolder() {
         setWallpaper("/background1.png");
         setPreference("pref_app_text_color", whiteTextColor);
         setPreference("pref_folder_text_color", lightFolderColor);
 
-        InputStream dataInputStream = getClass().getResourceAsStream("/data_screenshot.json");
-        FileDataStorage fs = FileDataStorage.getInstance();
-        fs.loadFromInputStream(dataInputStream);
-
         ActivityScenario.launch(MainActivity.class);
-        Thread.sleep(1000);
 
         onView(isRoot()).perform(click());
 
@@ -76,17 +88,12 @@ public class ScreenshotTest {
     }
 
     @Test
-    public void takeScreenshotOfHomeFolderDark() throws InterruptedException {
+    public void takeScreenshotOfHomeFolderDark() {
         setWallpaper("/background2.png");
         setPreference("pref_app_text_color", blackTextColor);
         setPreference("pref_folder_text_color", darkFolderColor);
 
-        InputStream dataInputStream = getClass().getResourceAsStream("/data_screenshot.json");
-        FileDataStorage fs = FileDataStorage.getInstance();
-        fs.loadFromInputStream(dataInputStream);
-
         ActivityScenario.launch(MainActivity.class);
-        Thread.sleep(1000);
 
         onView(isRoot()).perform(click());
 
@@ -94,17 +101,12 @@ public class ScreenshotTest {
     }
 
     @Test
-    public void takeScreenshotOfMediaFolder() throws InterruptedException {
+    public void takeScreenshotOfMediaFolder() {
         setWallpaper("/background2.png");
         setPreference("pref_app_text_color", blackTextColor);
         setPreference("pref_folder_text_color", darkFolderColor);
 
-        InputStream dataInputStream = getClass().getResourceAsStream("/data_screenshot.json");
-        FileDataStorage fs = FileDataStorage.getInstance();
-        fs.loadFromInputStream(dataInputStream);
-
         ActivityScenario.launch(MainActivity.class);
-        Thread.sleep(1000);
 
         onView(withText("media"))
                 .perform(click());
