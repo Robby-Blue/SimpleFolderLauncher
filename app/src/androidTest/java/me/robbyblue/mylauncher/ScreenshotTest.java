@@ -76,9 +76,7 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfHomeFolder() {
-        setWallpaper("/background1.png");
-        setPreference("pref_app_text_color", whiteTextColor);
-        setPreference("pref_folder_text_color", lightFolderColor);
+        setTheme(true);
 
         ActivityScenario.launch(MainActivity.class);
 
@@ -89,9 +87,7 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfHomeFolderDark() {
-        setWallpaper("/background2.png");
-        setPreference("pref_app_text_color", blackTextColor);
-        setPreference("pref_folder_text_color", darkFolderColor);
+        setTheme(false);
 
         ActivityScenario.launch(MainActivity.class);
 
@@ -102,9 +98,7 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfMediaFolder() {
-        setWallpaper("/background2.png");
-        setPreference("pref_app_text_color", blackTextColor);
-        setPreference("pref_folder_text_color", darkFolderColor);
+        setTheme(false);
 
         ActivityScenario.launch(MainActivity.class);
 
@@ -136,9 +130,7 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfSearch() throws InterruptedException {
-        setWallpaper("/background2.png");
-        setPreference("pref_app_text_color", blackTextColor);
-        setPreference("pref_folder_text_color", darkFolderColor);
+        setTheme(false);
 
         AppsListCache.getInstance().loadTestApps();
 
@@ -153,9 +145,8 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfSearchDots() throws InterruptedException {
-        setWallpaper("/background2.png");
-        setPreference("pref_app_text_color", blackTextColor);
-        setPreference("pref_folder_text_color", darkFolderColor);
+        setTheme(true);
+
         ActivityScenario.launch(SearchActivity.class);
 
         onView(withId(R.id.search_bar))
@@ -167,12 +158,29 @@ public class ScreenshotTest {
 
     @Test
     public void takeScreenshotOfSettings() {
-        setWallpaper("/background1.png");
-        setPreference("pref_app_text_color", whiteTextColor);
-        setPreference("pref_folder_text_color", lightFolderColor);
+        setTheme(true);
+
         ActivityScenario.launch(SettingsActivity.class);
         onView(withText("general")).perform(click());
 
         Screengrab.screenshot("settings");
     }
+
+    public void setTheme(boolean dark) {
+        if (dark) {
+            setWallpaper("/background1.png");
+            setPreference("pref_app_text_color", whiteTextColor);
+            setPreference("pref_folder_text_color", lightFolderColor);
+        } else {
+            setWallpaper("/background2.png");
+            setPreference("pref_app_text_color", blackTextColor);
+            setPreference("pref_folder_text_color", darkFolderColor);
+        }
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
