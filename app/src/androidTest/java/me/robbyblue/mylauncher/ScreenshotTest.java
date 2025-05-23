@@ -170,10 +170,12 @@ public class ScreenshotTest {
         if (dark) {
             setWallpaper("/background1.png");
             setPreference("pref_app_text_color", whiteTextColor);
+            setPreference("pref_shortcut_text_color", whiteTextColor);
             setPreference("pref_folder_text_color", lightFolderColor);
         } else {
             setWallpaper("/background2.png");
             setPreference("pref_app_text_color", blackTextColor);
+            setPreference("pref_shortcut_text_color", blackTextColor);
             setPreference("pref_folder_text_color", darkFolderColor);
         }
         try {
