@@ -6,6 +6,22 @@ from Font.funcs import putTTFText
 # current cwd is the fastlane folder
 screenshots_folder = "metadata/android/en-US/images/phoneScreenshots"
 
+def read_image(name):
+    path = os.path.join(screenshots_folder, name)
+    screenshot = cv2.imread(path)
+    screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2BGRA)
+    os.remove(path)
+
+    return screenshot
+
+def combine(img1, img2):
+    height, width, _ = img1.shape
+    mask = np.fromfunction(lambda y, x: x > (200 + 500 * (height - y) / height), (height, width))
+
+    img1[mask, 0:3] = img2[mask, 0:3]
+
+    return img1
+
 def get_text_width(text, font, font_scale):
     image = np.ones((100, 1000, 4), dtype=np.uint8) * 255
     
@@ -44,7 +60,7 @@ def round_corners(image):
     return image
 
 def round_corner(mask, h, v):
-    size = 96
+    size = 32
     height, width = mask.shape
 
     y = height - size if v else 0
@@ -89,17 +105,13 @@ def paste_image(background, image):
     background[y:end_y, x:x+width] = background_cut
     return background
 
-def process_image(input_name, output_name, text):
-    input_path = os.path.join(screenshots_folder, input_name)
+def process_image(screenshot, output_name, text):
     output_path = os.path.join(screenshots_folder, output_name)
 
     width = 1080
     height = 1920
 
     image = np.ones((height, width, 4), dtype=np.uint8) * 255
-
-    screenshot = cv2.imread(input_path)
-    screenshot = cv2.cvtColor(screenshot, cv2.COLOR_BGR2BGRA)
 
     screenshot = scale_image_to_width(screenshot, width*0.9)
     screenshot = round_corners(screenshot)
@@ -121,11 +133,14 @@ def process_image(input_name, output_name, text):
                    spacing=3, wordSpacing=20)
 
     cv2.imwrite(output_path, image)
-    
-    os.remove(input_path)
-    
-process_image("main_screen.png", "1.png", "simple")
-process_image("search.png", "2.png", "quick search")
-process_image("settings.png", "3.png", "customizeable")
 
-os.remove("metadata/android/screenshots.html")
+home = read_image("home_folder.png")
+home_dark = read_image("home_folder_dark.png")
+
+home_combined = combine(home, home_dark)
+
+process_image(home_combined, "1.png", "simple")
+process_image(read_image("media_folder.png"), "2.png", "yours")
+process_image(read_image("search.png"), "3.png", "search")
+process_image(read_image("search_dots.png"), "4.png", "Dots")
+process_image(read_image("settings.png"), "5.png", "customizeable")
