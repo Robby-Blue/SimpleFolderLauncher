@@ -30,8 +30,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_search_show_shortcuts"
-            android:summaryOff="results will contains apps' shortcuts"
-            android:summaryOn="results won't contains apps' shortcuts"
+            android:summaryOff="results won't contains apps' shortcuts"
+            android:summaryOn="results will contains apps' shortcuts"
             android:title="show shortcuts"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
