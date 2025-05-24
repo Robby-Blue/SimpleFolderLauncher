@@ -13,7 +13,9 @@
         </intent>
     </queries>
     <application
+        android:name=".LauncherApp"
         android:allowBackup="true"
+        android:clearTaskOnLaunch="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -41,6 +43,9 @@
         <activity android:name=".WidgetSetupActivity" />
         <activity
             android:name=".settings.SettingsActivity"
+            android:theme="@style/PreferenceTheme" />
+        <activity
+            android:name=".CrashActivity"
             android:theme="@style/PreferenceTheme" />
     </application>
 

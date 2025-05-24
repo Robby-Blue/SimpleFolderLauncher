@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    android:theme="@style/Theme.MyLauncher"
+    tools:context=".CrashActivity">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="folder launcher crashed"
+        android:textColor="@color/black"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/stacktrace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/tutorial"
+        android:layout_below="@+id/header"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="16dp" />
+
+    <TextView
+        android:id="@+id/tutorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/github_button"
+        android:layout_marginBottom="8dp"
+        android:text="please consider creating a github issue about this crash. if you have a github account, press the below button, paste the copied data into a new issue and add the steps required to reproduce" />
+
+    <Button
+        android:id="@+id/github_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/default_button_bg"
+        android:text="report on github" />
+
+</RelativeLayout>
