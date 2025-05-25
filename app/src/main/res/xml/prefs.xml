@@ -14,6 +14,14 @@
 
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_allow_rotation"
+            android:summaryOff="screen rotation is disabled"
+            android:summaryOn="screen rotation is enabled"
+            android:title="allow rotation"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
