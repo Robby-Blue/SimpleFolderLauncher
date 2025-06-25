@@ -40,5 +40,8 @@ Dots let you quickly jump to specific actions or apps by typing a short prefix. 
 
 For Example, typing ".b example.com" in the search bar opens *example.com* in your default browser.
 
-![a homescreen, with apps, folders, and two widgets next to each other](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
-![inside a folder, with more apps](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
+[<img alt="a home screen showing the users apps and folders at the bottom of the screen in front of the background." src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" title="home" width="160"/>](fastlane/metadata/android/en-US/images/phoneScreenshots/1.png)
+[<img alt="a home screen showing a users 'media' folder containing several apps with custom icons and custom names" src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" title="folder" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/2.png)
+[<img alt="a search page searching for 'youtube' showing the youtube app and it shortcuts, namely the subscriptions page, the search page and the explore page" src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" title="search" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)
+[<img alt="a search page searching for '.b example.org' showing a shotcut to open example.org in the default browser" src="fastlane/metadata/android/en-US/images/phoneScreenshots/4.png" title="dots" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/4.png)
+[<img alt="a settings page containing several settings related to the launchers behavious and design" src="fastlane/metadata/android/en-US/images/phoneScreenshots/5.png" title="settings" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png)

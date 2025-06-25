@@ -1,0 +1,7 @@
+Added
+- crash screen
+- rotation lock pref
+
+Improved
+- search page colors
+- f-droid screenshots
