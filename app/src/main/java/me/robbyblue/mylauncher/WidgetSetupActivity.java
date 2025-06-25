@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -125,24 +128,30 @@ public class WidgetSetupActivity extends AppCompatActivity {
     }
 
     public void showSizeDialog(WidgetLayout widget, Context ctx) {
+        boolean isWidget = widget != null;
+
         EditText input = new EditText(ctx);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("size (0-100)");
+
+        int maxNumber = isWidget ? 100 : 300;
+
+        LinearLayout titleLayout = getTitleLayout(isWidget, maxNumber);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-        builder.setTitle("enter size");
+        builder.setTitle("enter size (0-" + maxNumber + ")");
         builder.setView(input);
+        builder.setCustomTitle(titleLayout);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
             String numberText = input.getText().toString();
             try {
                 double number = Double.parseDouble(numberText);
-                if (number < 1 || number > 100) {
+                if (number < 1 || number > maxNumber) {
                     return;
                 }
                 double size = number / 100d;
                 FileDataStorage fs = FileDataStorage.getInstance();
-                if (widget != null) {
+                if (isWidget) {
                     widget.setSize(size);
                 } else {
                     WidgetList list = new WidgetList(size);
@@ -152,11 +161,34 @@ public class WidgetSetupActivity extends AppCompatActivity {
                 fs.storeFilesStructure();
                 showLayout();
             } catch (NumberFormatException e) {
+                Toast.makeText(this, "invalid number", Toast.LENGTH_LONG).show();
             }
         });
 
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    @NonNull
+    private LinearLayout getTitleLayout(boolean isWidget, int maxNumber) {
+        String explanation = isWidget ? "height in relation to screen width as a percentage (eg. 100 is as tall as wide, a perfect square)" :
+                "width as a percentage (eg 50 takes up half of the screen)";
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setPadding(8, 8, 8, 8);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        TextView titleView = new TextView(this);
+        titleView.setText("Enter size (0-" + maxNumber + ")");
+        titleView.setTextSize(18);
+
+        TextView explanationView = new TextView(this);
+        explanationView.setText(explanation);
+        explanationView.setTextSize(14);
+
+        layout.addView(titleView);
+        layout.addView(explanationView);
+        return layout;
     }
 
 }
