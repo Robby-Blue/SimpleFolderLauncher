@@ -42,6 +42,10 @@ public class WidgetSystem {
         int minWidth = appWidgetInfo.minWidth;
         int minHeight = appWidgetInfo.minHeight;
 
+        if(minWidth == 0){
+            minWidth = minHeight = 1;
+        }
+
         int screenWidth = container.getWidth();
         int height = (int) (screenWidth * minHeight / minWidth);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
