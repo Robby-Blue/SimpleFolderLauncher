@@ -25,6 +25,20 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="gestures"
+        app:iconSpaceReserved="false">
+        <androidx.preference.DropDownPreference
+            android:defaultValue="none"
+            android:entries="@array/pref_doubletap"
+            android:entryValues="@array/pref_doubletap_values"
+            android:key="pref_gesture_doubletap"
+            android:title="on double tap"
+
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="search"
         app:iconSpaceReserved="false">
         <CheckBoxPreference

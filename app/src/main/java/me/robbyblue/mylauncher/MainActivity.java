@@ -7,6 +7,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.LauncherApps;
 import android.os.Bundle;
 import android.os.UserHandle;
@@ -27,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -143,45 +145,66 @@ public class MainActivity extends AppCompatActivity {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
 
-        SwipeListener swipeListener = new SwipeListener();
-        gestureDetector = new GestureDetectorCompat(this, swipeListener);
+        HomeGestureListener homeGestureListener = new HomeGestureListener();
+        gestureDetector = new GestureDetectorCompat(this, homeGestureListener);
 
-        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
-            if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
-                return false;
-            }
-
-            if (velocityY < -1000) {
-                Intent intent = new Intent(this, SearchActivity.class);
-                searchLauncher.launch(intent);
-            } else if (velocityY > 1000) {
-                String panelMethod = "expandNotificationsPanel";
-                if (velocityY > 5000) {
-                    panelMethod = "expandSettingsPanel";
-                }
-
-                // as per https://stackoverflow.com/questions/31897920/how-to-open-the-android-quick-notification-setting
-                try {
-                    @SuppressLint("WrongConstant") Object service = getSystemService("statusbar");
-                    Class<?> statusBarManager = Class.forName("android.app.StatusBarManager");
-
-                    Method expand = statusBarManager.getMethod(panelMethod);
-                    expand.invoke(service);
-                } catch (Exception e) {
-                    String toastText = "couldn't open quick settings: " + e;
-                    Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
-                    toast.show();
-                    e.printStackTrace();
-                }
-            }
-
-            return false;
-        });
+        homeGestureListener.setHomeGestureCallback(this::onSwipe, this::onDoubleTap);
 
         recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
         findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         showFolder("~");
+    }
+
+    private boolean onSwipe(float velocityX, float velocityY) {
+        if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
+            return false;
+        }
+
+        if (velocityY < -1000) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            searchLauncher.launch(intent);
+            return true;
+        } else if (velocityY > 1000) {
+            String panelMethod = "expandNotificationsPanel";
+            if (velocityY > 5000) {
+                panelMethod = "expandSettingsPanel";
+            }
+
+            // as per https://stackoverflow.com/questions/31897920/how-to-open-the-android-quick-notification-setting
+            try {
+                @SuppressLint("WrongConstant") Object service = getSystemService("statusbar");
+                Class<?> statusBarManager = Class.forName("android.app.StatusBarManager");
+
+                Method expand = statusBarManager.getMethod(panelMethod);
+                expand.invoke(service);
+            } catch (Exception e) {
+                String toastText = "couldn't open quick settings: " + e;
+                Toast toast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
+                toast.show();
+                e.printStackTrace();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean onDoubleTap() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String action = prefs.getString("pref_gesture_doubletap", "none");
+
+        switch (action) {
+            case "none":
+                return false;
+            case "parent_folder":
+                showFolder("..");
+                break;
+            case "search":
+                Intent intent = new Intent(this, SearchActivity.class);
+                searchLauncher.launch(intent);
+                break;
+        }
+        return true;
     }
 
     private void registerLauncherAppsCallback() {
@@ -226,7 +249,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
+            menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         if (isContextMenuOpen) {

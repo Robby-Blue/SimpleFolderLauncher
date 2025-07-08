@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 import me.robbyblue.mylauncher.AppsListCache;
 import me.robbyblue.mylauncher.FileDataStorage;
+import me.robbyblue.mylauncher.HomeGestureListener;
 import me.robbyblue.mylauncher.R;
-import me.robbyblue.mylauncher.SwipeListener;
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
 import me.robbyblue.mylauncher.files.Folder;
@@ -128,10 +128,10 @@ public class SearchActivity extends Activity {
             return true;
         });
 
-        SwipeListener swipeListener = new SwipeListener();
-        gestureDetector = new GestureDetectorCompat(this, swipeListener);
+        HomeGestureListener homeGestureListener = new HomeGestureListener();
+        gestureDetector = new GestureDetectorCompat(this, homeGestureListener);
 
-        swipeListener.setOnSwipeListener((MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) -> {
+        homeGestureListener.setOnSwipeListener((float velocityX, float velocityY) -> {
             if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
                 return true;
             }

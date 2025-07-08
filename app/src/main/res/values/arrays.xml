@@ -8,4 +8,14 @@
         <item>start</item>
         <item>end</item>
     </string-array>
+    <string-array name="pref_doubletap">
+        <item>none</item>
+        <item>open parent folder</item>
+        <item>open search</item>
+    </string-array>
+    <string-array name="pref_doubletap_values">
+        <item>none</item>
+        <item>parent_folder</item>
+        <item>search</item>
+    </string-array>
 </resources>
