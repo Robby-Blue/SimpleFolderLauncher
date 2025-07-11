@@ -37,24 +37,32 @@ public class WidgetSystem {
         Context ctx = container.getContext();
         LinearLayout childLayout = new LinearLayout(ctx);
 
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
-        AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(((WidgetElement) widget).getAppWidgetId());
-        int minWidth = appWidgetInfo.minWidth;
-        int minHeight = appWidgetInfo.minHeight;
-
-        if(minWidth == 0){
-            minWidth = minHeight = 1;
-        }
-
         int screenWidth = container.getWidth();
-        int height = (int) (screenWidth * minHeight / minWidth);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
-        childLayout.setLayoutParams(layoutParams);
 
         if (showOutlines) {
             childLayout.setBackground(createOutline(Color.MAGENTA));
         }
 
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
+        AppWidgetProviderInfo appWidgetInfo = appWidgetManager.getAppWidgetInfo(((WidgetElement) widget).getAppWidgetId());
+
+        if (appWidgetInfo == null) {
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, 100);
+            childLayout.setLayoutParams(layoutParams);
+            container.addView(childLayout);
+            return childLayout;
+        }
+
+        int minWidth = appWidgetInfo.minWidth;
+        int minHeight = appWidgetInfo.minHeight;
+
+        if (minWidth == 0) {
+            minWidth = minHeight = 1;
+        }
+
+        int height = (int) (screenWidth * minHeight / minWidth);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
+        childLayout.setLayoutParams(layoutParams);
         childLayout.setGravity(Gravity.CENTER);
 
         container.addView(childLayout);
