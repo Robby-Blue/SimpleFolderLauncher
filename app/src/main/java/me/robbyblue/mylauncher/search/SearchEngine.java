@@ -30,8 +30,12 @@ public class SearchEngine {
         String[] words = fileNode.getName().split(" ");
         if (words.length > 1) {
             StringBuilder initials = new StringBuilder();
-            for (String word : words)
+            for (String word : words) {
+                if (word.length() == 0) {
+                    continue;
+                }
                 initials.append(word.charAt(0));
+            }
             items.add(new NamedItem(initials.toString(), fileNode));
         }
         return items;
