@@ -2,6 +2,8 @@ package me.robbyblue.mylauncher;
 
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Process;
+import android.os.UserHandle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +15,28 @@ public class AppData {
 
     private final String name;
     private final String packageName;
+    private final UserHandle user;
     private final Drawable icon;
     private final List<ShortcutInfo> shortcutInfos;
+
+    public AppData(String name, String packageName,UserHandle user, Drawable icon, List<ShortcutInfo> shortcutInfos) {
+        this.name = name;
+        this.packageName = packageName;
+        this.user = user;
+        this.icon = icon;
+        this.shortcutInfos = shortcutInfos;
+    }
 
     public AppData(String name, String packageName, Drawable icon, List<ShortcutInfo> shortcutInfos) {
         this.name = name;
         this.packageName = packageName;
+        this.user = Process.myUserHandle();
         this.icon = icon;
         this.shortcutInfos = shortcutInfos;
     }
 
     public AppFile toAppFile() {
-        return new AppFile(this.name, this.packageName);
+        return new AppFile(this.name, this.packageName, this.user);
     }
 
     public ArrayList<AppFile> toAppFileWithShortcuts() {

@@ -4,13 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -47,25 +49,46 @@ public class AppsListCache {
         Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
         getAppsIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        List<ResolveInfo> allApps = pm.queryIntentActivities(getAppsIntent, PackageManager.GET_META_DATA);
-        int totalApps = allApps.size();
-        int appIndex = 0;
-        for (ResolveInfo ri : allApps) {
-            String label = ri.loadLabel(pm).toString();
-            String packageName = ri.activityInfo.packageName;
-            Drawable icon = ri.activityInfo.loadIcon(pm);
+        UserManager manager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        LauncherApps launcher = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 
-            List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
+        List<UserHandle> users = manager.getUserProfiles();
+        int userCount = users.size();
+        int userIndex = 0;
+        for (UserHandle user : users) {
+            boolean userIsWork = user != Process.myUserHandle();
 
-            AppData file = new AppData(label, packageName, icon, shortcutInfos);
-            apps.add(file);
+            userIndex++;
 
-            String text = appIndex + "/" + totalApps + " " + packageName;
-            ((Activity) context).runOnUiThread(() -> statusView.setText(text));
+            List<LauncherActivityInfo> userApps = launcher.getActivityList(null, user);
+            int userAppsCount = userApps.size();
 
-            appIndex++;
+            int appIndex = 0;
+            for (LauncherActivityInfo app : userApps) {
+                appIndex++;
+
+                ApplicationInfo appInfo = app.getApplicationInfo();
+
+                String label = appInfo.loadLabel(pm).toString();
+                String packageName = appInfo.packageName;
+                Drawable icon = appInfo.loadIcon(pm);
+
+                List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
+
+                if (userIsWork) {
+                    label = "work: " + label;
+                }
+
+                AppData file = new AppData(label, packageName, user, icon, shortcutInfos);
+                apps.add(file);
+
+                String indexString = appIndex + "/" + userAppsCount;
+                String userIndexString = userIndex + "/" + userCount;
+                String text = userIndexString + ", " + indexString + " " + packageName;
+                ((Activity) context).runOnUiThread(() -> statusView.setText(text));
+            }
+            apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         }
-        apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
     }
 
     public List<ShortcutInfo> getShortcuts(Context context, String packageName) {

@@ -1,11 +1,14 @@
 package me.robbyblue.mylauncher.search;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutInfo;
 import android.graphics.Color;
 import android.widget.Toast;
+
+import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileNode;
@@ -56,8 +59,11 @@ public class FileSearchResult extends SearchResult {
             }
         } else if (fileNode instanceof AppFile) {
             AppFile appFile = (AppFile) fileNode;
-            Intent launchIntent = activity.getPackageManager().getLaunchIntentForPackage(appFile.getPackageName());
-            activity.startActivity(launchIntent);
+
+            LauncherApps launcher = (LauncherApps) activity.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            List<LauncherActivityInfo> activities = launcher.getActivityList(appFile.getPackageName(), appFile.getUser());
+            ComponentName componentName = activities.get(0).getComponentName();
+            launcher.startMainActivity(componentName, appFile.getUser(), null, null);
         }
     }
 
