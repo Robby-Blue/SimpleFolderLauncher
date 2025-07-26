@@ -129,18 +129,27 @@ public class ScreenshotTest {
         UiAutomation automation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
 
         int waited = 0;
-        while (waited < 1000) {
-            Bitmap screen = automation.takeScreenshot();
-            int pixel = screen.getPixel(50, 50);
-            int r = Color.red(pixel);
-            int g = Color.green(pixel);
-            int b = Color.blue(pixel);
+        while (waited < 10000) {
+            SystemClock.sleep(50);
+            waited += 50;
 
-            if ((r + g + b) / 3 > 25) {
+            Bitmap screen = automation.takeScreenshot();
+
+            int totalBrightness = 0;
+            for(int x = 0;x<screen.getWidth();x++) {
+                int pixel = screen.getPixel(x, screen.getHeight() / 2);
+                int r = Color.red(pixel);
+                int g = Color.green(pixel);
+                int b = Color.blue(pixel);
+
+                int brightness = (r + g + b) / 3;
+                totalBrightness += brightness;
+            }
+
+            int average = totalBrightness / screen.getWidth();
+            if (average > 25) {
                 return;
             }
-            SystemClock.sleep(100);
-            waited += 100;
         }
     }
 
@@ -200,6 +209,7 @@ public class ScreenshotTest {
             setPreference("pref_shortcut_text_color", blackTextColor);
             setPreference("pref_folder_text_color", darkFolderColor);
         }
+        SystemClock.sleep(150);
     }
 
 }
