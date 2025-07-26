@@ -1,5 +1,10 @@
 package me.robbyblue.mylauncher;
 
+import android.content.Context;
+import android.os.Process;
+import android.os.UserHandle;
+import android.os.UserManager;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,6 +31,7 @@ import me.robbyblue.mylauncher.widgets.WidgetList;
 
 public class FileDataStorage {
 
+    private Context context;
     private static FileDataStorage instance;
     File structureFile;
 
@@ -34,8 +40,9 @@ public class FileDataStorage {
     private FileDataStorage() {
     }
 
-    private FileDataStorage(File structureFile) {
+    private FileDataStorage(File structureFile, Context context) {
         this.structureFile = structureFile;
+        this.context = context;
         if (this.structureFile != null && this.structureFile.exists()) {
             try {
                 this.loadFromInputStream(new FileInputStream(this.structureFile));
@@ -47,8 +54,9 @@ public class FileDataStorage {
         }
     }
 
-    private FileDataStorage(InputStream inputStream) {
+    private FileDataStorage(InputStream inputStream, Context context) {
         this.structureFile = null;
+        this.context = context;
         this.loadFromInputStream(inputStream);
     }
 
@@ -59,18 +67,15 @@ public class FileDataStorage {
         return instance;
     }
 
-    public static FileDataStorage getInstance(File file) {
+    public static FileDataStorage getInstance(File file, Context context) {
         if (instance == null) {
-            instance = new FileDataStorage(file);
+            instance = new FileDataStorage(file, context);
         }
         return instance;
     }
 
-    public static FileDataStorage getInstance(InputStream inputStream) {
-        if (instance == null) {
-            instance = new FileDataStorage(inputStream);
-        }
-        return instance;
+    public static FileDataStorage getNewInstance(InputStream inputStream, Context context) {
+        return new FileDataStorage(inputStream, context);
     }
 
     public void loadFromInputStream(InputStream inputStream) {
@@ -162,8 +167,17 @@ public class FileDataStorage {
                 if (fileNodeJson.getString("type").equals("file")) {
                     String packageName = fileNodeJson.getString("package");
 
+                    UserHandle user;
+
+                    if (fileNodeJson.has("userHandleSerialNumber")) {
+                        UserManager manager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+                        user = manager.getUserForSerialNumber(fileNodeJson.getLong("userHandleSerialNumber"));
+                    } else {
+                        user = Process.myUserHandle();
+                    }
+
                     IconData iconData = IconData.createIconDataFromJson(fileNodeJson);
-                    files.add(new AppFile(name, packageName, iconData));
+                    files.add(new AppFile(name, packageName, iconData, user));
                 } else {
                     files.add(new Folder(name, folderName + "/" + name));
                 }
@@ -233,8 +247,12 @@ public class FileDataStorage {
                 fileJson.put("name", fileNode.getName());
                 fileJson.put("icon", fileNode.getIconData().toJson());
                 if (fileNode instanceof AppFile) {
+                    UserManager manager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+                    long serialNumber = manager.getSerialNumberForUser(((AppFile) fileNode).getUser());
+
                     fileJson.put("type", "file");
                     fileJson.put("package", ((AppFile) fileNode).getPackageName());
+                    fileJson.put("userHandleSerialNumber", serialNumber);
                 } else if (fileNode instanceof Folder) {
                     fileJson.put("type", "folder");
                 }

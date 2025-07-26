@@ -19,18 +19,10 @@ public class AppData {
     private final Drawable icon;
     private final List<ShortcutInfo> shortcutInfos;
 
-    public AppData(String name, String packageName,UserHandle user, Drawable icon, List<ShortcutInfo> shortcutInfos) {
+    public AppData(String name, String packageName, UserHandle user, Drawable icon, List<ShortcutInfo> shortcutInfos) {
         this.name = name;
         this.packageName = packageName;
         this.user = user;
-        this.icon = icon;
-        this.shortcutInfos = shortcutInfos;
-    }
-
-    public AppData(String name, String packageName, Drawable icon, List<ShortcutInfo> shortcutInfos) {
-        this.name = name;
-        this.packageName = packageName;
-        this.user = Process.myUserHandle();
         this.icon = icon;
         this.shortcutInfos = shortcutInfos;
     }
@@ -46,7 +38,7 @@ public class AppData {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
             for (ShortcutInfo shortcutInfo : this.getShortcutInfos()) {
                 String shortcutLabel = shortcutInfo.getShortLabel().toString();
-                appFiles.add(new ShortcutAppFile(this.name, shortcutLabel, this.packageName, shortcutInfo));
+                appFiles.add(new ShortcutAppFile(this.name, shortcutLabel, this.packageName, this.user, shortcutInfo));
             }
         }
         return appFiles;

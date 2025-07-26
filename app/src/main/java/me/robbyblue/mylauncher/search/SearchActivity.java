@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.UserHandle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
@@ -185,7 +186,8 @@ public class SearchActivity extends Activity {
             for (FileNode fileNode : contents) {
                 if (fileNode instanceof Folder) continue;
                 String packageName = ((AppFile) fileNode).getPackageName();
-                AppFile app = new AppFile(fileNode.getName(), packageName, new AppIconData(packageName));
+                UserHandle user = ((AppFile) fileNode).getUser();
+                AppFile app = new AppFile(fileNode.getName(), packageName, new AppIconData(packageName), user);
                 items.addAll(search.indexSearchableItem(app));
             }
         }

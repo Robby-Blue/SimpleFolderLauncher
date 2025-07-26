@@ -118,7 +118,7 @@ public class AppsListCache {
             List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
 
             removePackage(packageName);
-            apps.add(new AppData(appName, packageName, icon, shortcutInfos));
+            apps.add(new AppData(appName, packageName, Process.myUserHandle(), icon, shortcutInfos));
             apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -176,7 +176,7 @@ public class AppsListCache {
                     .build());
         }
 
-        apps.add(new AppData("Youtube", "com.google.android.youtube", currentYoutube.getIcon(), shortcuts));
+        apps.add(new AppData("Youtube", "com.google.android.youtube", Process.myUserHandle(), currentYoutube.getIcon(), shortcuts));
 
         this.apps = apps;
     }

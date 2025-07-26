@@ -16,6 +16,15 @@
         },
         "type": "file",
         "package": "test.package"
+      },
+      {
+        "name": "App2",
+        "icon": {
+          "type": "app_icon",
+          "packageName": "test.package2"
+        },
+        "type": "file",
+        "package": "test.package2"
       }
     ],
     "widgets": {

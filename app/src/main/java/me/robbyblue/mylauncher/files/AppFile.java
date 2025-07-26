@@ -1,5 +1,6 @@
 package me.robbyblue.mylauncher.files;
 
+import android.os.Process;
 import android.os.UserHandle;
 
 import me.robbyblue.mylauncher.files.icons.AppIconData;
@@ -8,16 +9,12 @@ import me.robbyblue.mylauncher.files.icons.IconData;
 public class AppFile extends FileNode {
 
     private final String packageName;
-    private UserHandle user;
+    private final UserHandle user;
 
-    public AppFile(String name, String packageName, IconData icon) {
+    public AppFile(String name, String packageName, IconData icon, UserHandle user) {
         super(name, icon);
         this.packageName = packageName;
-    }
-
-    public AppFile(String name, String packageName) {
-        super(name, new AppIconData(packageName));
-        this.packageName = packageName;
+        this.user = user;
     }
 
     public AppFile(String name, String packageName, UserHandle user) {

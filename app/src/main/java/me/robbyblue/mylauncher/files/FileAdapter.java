@@ -1,8 +1,10 @@
 package me.robbyblue.mylauncher.files;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.LauncherApps;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +19,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import me.robbyblue.mylauncher.MainActivity;
 import me.robbyblue.mylauncher.R;
@@ -74,8 +77,10 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
                 activity.showFolder(fullPath);
             } else {
                 AppFile appFile = (AppFile) file;
-                Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(appFile.getPackageName());
-                context.startActivity(launchIntent);
+                LauncherApps launcher = (LauncherApps) activity.getSystemService(Context.LAUNCHER_APPS_SERVICE);
+                List<LauncherActivityInfo> activities = launcher.getActivityList(appFile.getPackageName(), appFile.getUser());
+                ComponentName componentName = activities.get(0).getComponentName();
+                launcher.startMainActivity(componentName, appFile.getUser(), null, null);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> activity.showFolder("~"), 1000);
             }
         });

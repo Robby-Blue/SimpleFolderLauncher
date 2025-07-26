@@ -6,6 +6,8 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -27,6 +29,7 @@ public class AddFileActivity extends AppCompatActivity {
     String parentFolder;
     FileType selectedType = FileType.UNSET;
     String appPackage = null;
+    long userHandleSerialNumber = -1;
 
     ArrayList<AppFile> apps = new ArrayList<>();
     LinearLayoutManager layoutManager;
@@ -103,6 +106,7 @@ public class AddFileActivity extends AppCompatActivity {
             resultIntent.putExtra("type", selectedType.toString());
             resultIntent.putExtra("name", nameField.getText().toString());
             resultIntent.putExtra("package", appPackage);
+            resultIntent.putExtra("userHandleSerialNumber", userHandleSerialNumber);
 
             setResult(Activity.RESULT_OK, resultIntent);
             finish();
@@ -120,7 +124,11 @@ public class AddFileActivity extends AppCompatActivity {
 
     public void select(int index){
         setBackgrounds(layoutManager, index);
-        appPackage = apps.get(index).getPackageName();
+        AppFile app = apps.get(index);
+        appPackage = app.getPackageName();
+
+        UserManager manager = (UserManager) getSystemService(Context.USER_SERVICE);
+        userHandleSerialNumber = manager.getSerialNumberForUser(app.getUser());
         nameField.setText(apps.get(index).getName());
     }
 

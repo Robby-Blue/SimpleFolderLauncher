@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.LauncherApps;
 import android.os.Bundle;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,10 +80,13 @@ public class MainActivity extends AppCompatActivity {
         FileType selectedType = FileType.valueOf(intent.getStringExtra("type"));
         String parentFolder = intent.getStringExtra("parent");
         String name = intent.getStringExtra("name");
-        String appPackage = intent.getStringExtra("package");
 
         if (selectedType == FileType.APPFILE) {
-            dataStorage.createFile(parentFolder, new AppFile(name, appPackage));
+            String appPackage = intent.getStringExtra("package");
+            long serialNumber = intent.getLongExtra("userHandleSerialNumber", -1);
+            UserManager manager = (UserManager) getSystemService(Context.USER_SERVICE);
+            UserHandle user = manager.getUserForSerialNumber(serialNumber);
+            dataStorage.createFile(parentFolder, new AppFile(name, appPackage, user));
         } else if (selectedType == FileType.FOLDER) {
             dataStorage.createFolder(parentFolder, name);
         }
@@ -119,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
             IconPackManager.getInstance(getPackageManager());
             AppsListCache.getInstance(this, folderPathView);
             File structureFile = new File(getFilesDir(), "filesstructure.json");
-            dataStorage = FileDataStorage.getInstance(structureFile);
+            dataStorage = FileDataStorage.getInstance(structureFile, this.getApplicationContext());
             runOnUiThread(() -> {
                 setupUi();
             });
