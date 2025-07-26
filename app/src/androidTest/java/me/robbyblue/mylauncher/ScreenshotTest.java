@@ -9,12 +9,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.app.UiAutomation;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.SystemClock;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.core.app.ActivityScenario;
@@ -117,8 +119,28 @@ public class ScreenshotTest {
 
         try {
             wallpaperManager.setBitmap(bitmap);
+            waitForWallpaper();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void waitForWallpaper() {
+        UiAutomation automation = InstrumentationRegistry.getInstrumentation().getUiAutomation();
+
+        int waited = 0;
+        while (waited < 1000) {
+            Bitmap screen = automation.takeScreenshot();
+            int pixel = screen.getPixel(50, 50);
+            int r = Color.red(pixel);
+            int g = Color.green(pixel);
+            int b = Color.blue(pixel);
+
+            if ((r + g + b) / 3 > 25) {
+                return;
+            }
+            SystemClock.sleep(100);
+            waited += 100;
         }
     }
 
@@ -177,11 +199,6 @@ public class ScreenshotTest {
             setPreference("pref_app_text_color", blackTextColor);
             setPreference("pref_shortcut_text_color", blackTextColor);
             setPreference("pref_folder_text_color", darkFolderColor);
-        }
-        try {
-            Thread.sleep(100);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
