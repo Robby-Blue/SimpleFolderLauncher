@@ -1,0 +1,6 @@
+Added
+- work profiles
+
+Fixed
+- widgets might crash
+- double spaces in names might crash
