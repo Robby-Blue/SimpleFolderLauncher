@@ -39,7 +39,14 @@ public class AppsListCache {
         return instance;
     }
 
-    public static AppsListCache getInstance() {
+    public static AppsListCache getInstanceAssumeExists() {
+        return instance;
+    }
+
+    public static AppsListCache getInstance() throws NotInitializedException {
+        if (instance == null) {
+            throw new NotInitializedException("AppListCache not loaded");
+        }
         return instance;
     }
 

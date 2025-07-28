@@ -60,9 +60,20 @@ public class FileDataStorage {
         this.loadFromInputStream(inputStream);
     }
 
-    public static FileDataStorage getInstance() {
+    public static FileDataStorage getInstanceAssumeExists() {
+        return instance;
+    }
+
+    public static FileDataStorage getInstanceOrCreate() {
         if (instance == null) {
             instance = new FileDataStorage();
+        }
+        return instance;
+    }
+
+    public static FileDataStorage getInstance() throws NotInitializedException {
+        if (instance == null) {
+            throw new NotInitializedException("AppListCache not loaded");
         }
         return instance;
     }

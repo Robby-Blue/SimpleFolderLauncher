@@ -51,7 +51,7 @@ public class ScreenshotTest {
     @BeforeClass
     public static void beforeAll() throws InterruptedException {
         InputStream dataInputStream = ScreenshotTest.class.getResourceAsStream("/data_screenshot.json");
-        FileDataStorage fs = FileDataStorage.getInstance();
+        FileDataStorage fs = FileDataStorage.getInstanceOrCreate();
         fs.loadFromInputStream(dataInputStream);
 
         ActivityScenario.launch(MainActivity.class);
@@ -163,7 +163,7 @@ public class ScreenshotTest {
     public void takeScreenshotOfSearch() throws InterruptedException {
         setTheme(false);
 
-        AppsListCache.getInstance().loadTestApps();
+        AppsListCache.getInstanceAssumeExists().loadTestApps();
 
         ActivityScenario.launch(SearchActivity.class);
 

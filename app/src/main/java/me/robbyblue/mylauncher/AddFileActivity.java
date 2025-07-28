@@ -83,7 +83,12 @@ public class AddFileActivity extends AppCompatActivity {
         });
 
         // app selection recycler
-        apps = AppsListCache.getInstance().getAppsFiles();
+        try {
+            apps = AppsListCache.getInstance().getAppsFiles();
+        } catch (Exception e) {
+            finish();
+            return;
+        }
 
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
@@ -96,9 +101,9 @@ public class AddFileActivity extends AppCompatActivity {
             if (!isValidName(nameField.getText().toString()))
                 return false;
 
-            if(selectedType == FileType.UNSET)
+            if (selectedType == FileType.UNSET)
                 return false;
-            if(selectedType == FileType.APPFILE && appPackage == null)
+            if (selectedType == FileType.APPFILE && appPackage == null)
                 return false;
 
             Intent resultIntent = new Intent();
@@ -115,14 +120,14 @@ public class AddFileActivity extends AppCompatActivity {
     }
 
     private boolean isValidName(String name) {
-        if(name.contains("/"))
+        if (name.contains("/"))
             return false;
-        if(name.contains(".."))
+        if (name.contains(".."))
             return false;
         return name.length() != 0;
     }
 
-    public void select(int index){
+    public void select(int index) {
         setBackgrounds(layoutManager, index);
         AppFile app = apps.get(index);
         appPackage = app.getPackageName();
@@ -133,12 +138,12 @@ public class AddFileActivity extends AppCompatActivity {
     }
 
     private void setBackgrounds(LinearLayoutManager layoutManager, int index) {
-        for(int i =0;i<layoutManager.getItemCount();i++) {
+        for (int i = 0; i < layoutManager.getItemCount(); i++) {
             int background = R.drawable.transparent_button_bg;
-            if(i == index)
+            if (i == index)
                 background = R.drawable.selected_button_bg;
             View child = layoutManager.findViewByPosition(i);
-            if(child == null) // shouldnt happen but makes android studio shut up
+            if (child == null) // shouldnt happen but makes android studio shut up
                 continue;
             child.setBackgroundResource(background);
         }

@@ -32,11 +32,12 @@ public class WidgetSetupActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> pickWidgetLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
 
+        FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
+
         int appWidgetId = result.getData().getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
 
         WidgetElement element = new WidgetElement(appWidgetId, 1);
 
-        FileDataStorage fs = FileDataStorage.getInstance();
         WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
 
         if (isInRow) {
@@ -59,7 +60,13 @@ public class WidgetSetupActivity extends AppCompatActivity {
         Intent intent = getIntent();
         this.folder = intent.getStringExtra("folder");
 
-        FileDataStorage fs = FileDataStorage.getInstance();
+        FileDataStorage fs;
+        try {
+            fs = FileDataStorage.getInstance();
+        }catch (Exception e){
+            finish();
+            return;
+        }
         WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
 
         widgetList.getChildren().removeIf((child) -> {
@@ -92,9 +99,9 @@ public class WidgetSetupActivity extends AppCompatActivity {
     }
 
     private void showLayout() {
+        FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
         AppWidgetHost appWidgetHost = new AppWidgetHost(this, MainActivity.APPWIDGET_HOST_ID);
 
-        FileDataStorage fs = FileDataStorage.getInstance();
         WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
         LinearLayout container = findViewById(R.id.widget_container);
         HashMap<WidgetLayout, LinearLayout> layouts = WidgetSystem.createLayout(widgetList, container, true);
@@ -143,6 +150,8 @@ public class WidgetSetupActivity extends AppCompatActivity {
         builder.setCustomTitle(titleLayout);
 
         builder.setPositiveButton("OK", (dialog, which) -> {
+            FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
+
             String numberText = input.getText().toString();
             try {
                 double number = Double.parseDouble(numberText);
@@ -150,7 +159,6 @@ public class WidgetSetupActivity extends AppCompatActivity {
                     return;
                 }
                 double size = number / 100d;
-                FileDataStorage fs = FileDataStorage.getInstance();
                 if (isWidget) {
                     widget.setSize(size);
                 } else {

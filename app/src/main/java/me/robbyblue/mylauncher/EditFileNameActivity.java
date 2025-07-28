@@ -20,7 +20,13 @@ public class EditFileNameActivity extends Activity {
         String parentFolder = intent.getStringExtra("folder");
         int fileIndex = intent.getIntExtra("fileIndex", -1);
 
-        FileDataStorage fs = FileDataStorage.getInstance();
+        FileDataStorage fs;
+        try {
+            fs = FileDataStorage.getInstance();
+        } catch (Exception e) {
+            finish();
+            return;
+        }
         Folder folder = fs.getFolderContents(parentFolder);
         FileNode file = folder.getFiles().get(fileIndex);
         String currentName = file.getName();
@@ -44,7 +50,7 @@ public class EditFileNameActivity extends Activity {
             nameField.clearFocus();
 
             String newName = nameField.getText().toString();
-            FileDataStorage.getInstance().renameFile(parentFolder, fileIndex, newName);
+            fs.renameFile(parentFolder, fileIndex, newName);
             finish();
             return true;
         });

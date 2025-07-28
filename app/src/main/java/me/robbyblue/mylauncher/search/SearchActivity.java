@@ -165,10 +165,18 @@ public class SearchActivity extends Activity {
 
         ArrayList<AppFile> appList = new ArrayList<>();
 
+        AppsListCache cache;
+        try {
+            cache = AppsListCache.getInstance();
+        } catch (Exception e) {
+            finish();
+            return null;
+        }
+
         if (showShortcuts) {
-            appList.addAll(AppsListCache.getInstance().getAppsFilesWithShortcuts());
+            appList.addAll(cache.getAppsFilesWithShortcuts());
         } else {
-            appList.addAll(AppsListCache.getInstance().getAppsFiles());
+            appList.addAll(cache.getAppsFiles());
         }
 
         for (FileNode fileNode : appList) {
@@ -176,7 +184,13 @@ public class SearchActivity extends Activity {
         }
 
         // folders
-        FileDataStorage fileSystem = FileDataStorage.getInstance();
+        FileDataStorage fileSystem;
+        try {
+            fileSystem = FileDataStorage.getInstance();
+        } catch (Exception e) {
+            finish();
+            return null;
+        }
         ArrayList<Folder> folderNames = fileSystem.getFolders();
         for (Folder folder : folderNames) {
             items.addAll(search.indexSearchableItem(folder));

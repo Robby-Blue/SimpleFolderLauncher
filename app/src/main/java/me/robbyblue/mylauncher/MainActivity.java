@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     GestureDetectorCompat gestureDetector;
 
     FileDataStorage dataStorage;
+    AppsListCache appCache;
 
     static int APPWIDGET_HOST_ID = 418512;
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> reloadFolderLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
         showFolder(currentFolder);
-        FileDataStorage.getInstance().storeFilesStructure();
+        dataStorage.storeFilesStructure();
     });
 
     @Override
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         new Thread(() -> {
             IconPackManager.getInstance(getPackageManager());
-            AppsListCache.getInstance(this, folderPathView);
+            appCache = AppsListCache.getInstance(this, folderPathView);
             File structureFile = new File(getFilesDir(), "filesstructure.json");
             dataStorage = FileDataStorage.getInstance(structureFile, this.getApplicationContext());
             runOnUiThread(() -> {
@@ -216,19 +217,20 @@ public class MainActivity extends AppCompatActivity {
         launcherApps.registerCallback(new LauncherApps.Callback() {
             @Override
             public void onPackageAdded(String packageName, UserHandle user) {
-                if (AppsListCache.getInstance() == null) return;
-                AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
+                if (appCache == null) return;
+                appCache.indexPackage(packageName, MainActivity.this);
             }
 
             @Override
             public void onPackageChanged(String packageName, UserHandle user) {
-                if (AppsListCache.getInstance() == null) return;
-                AppsListCache.getInstance().indexPackage(packageName, MainActivity.this);
+                if (appCache == null) return;
+                appCache.indexPackage(packageName, MainActivity.this);
             }
 
             @Override
             public void onPackageRemoved(String packageName, UserHandle user) {
-                AppsListCache.getInstance().removePackage(packageName);
+                if (appCache == null) return;
+                appCache.removePackage(packageName);
             }
 
             @Override
