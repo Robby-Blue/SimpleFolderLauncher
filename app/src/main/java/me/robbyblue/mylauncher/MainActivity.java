@@ -120,14 +120,16 @@ public class MainActivity extends AppCompatActivity {
 
         folderPathView = findViewById(R.id.folder_path_text);
 
+        IconPackManager.getInstance(getPackageManager());
+        File structureFile = new File(getFilesDir(), "filesstructure.json");
+        dataStorage = FileDataStorage.getInstance(structureFile, this.getApplicationContext());
+        appCache = AppsListCache.getInstance();
+        appCache.loadAppsInFolder(this, dataStorage.getFolderContents("~"));
+
+        setupUi();
+
         new Thread(() -> {
-            IconPackManager.getInstance(getPackageManager());
-            appCache = AppsListCache.getInstance(this, folderPathView);
-            File structureFile = new File(getFilesDir(), "filesstructure.json");
-            dataStorage = FileDataStorage.getInstance(structureFile, this.getApplicationContext());
-            runOnUiThread(() -> {
-                setupUi();
-            });
+            appCache.loadAllApps(this);
         }).start();
     }
 

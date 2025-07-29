@@ -17,7 +17,7 @@ public class AppIconData extends IconData {
 
     @Override
     public Drawable getIconDrawable() {
-        AppData app = AppsListCache.getInstanceAssumeExists().getAppByPackage(packageName);
+        AppData app = AppsListCache.getInstance().getAppByPackage(packageName);
         if (app == null)
             return null;
         return app.getIcon();

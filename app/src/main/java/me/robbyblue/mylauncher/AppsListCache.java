@@ -1,6 +1,5 @@
 package me.robbyblue.mylauncher;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -13,44 +12,53 @@ import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
+import me.robbyblue.mylauncher.files.FileNode;
+import me.robbyblue.mylauncher.files.Folder;
 
 public class AppsListCache {
 
     private static AppsListCache instance;
-    TextView statusView;
     ArrayList<AppData> apps = new ArrayList<>();
 
-    private AppsListCache(Context context, TextView view) {
-        this.statusView = view;
-        loadApps(context);
+    private AppsListCache() {
     }
 
-    public static AppsListCache getInstance(Context context, TextView view) {
+    public static AppsListCache getInstance() {
         if (instance == null) {
-            instance = new AppsListCache(context, view);
+            instance = new AppsListCache();
         }
         return instance;
     }
 
-    public static AppsListCache getInstanceAssumeExists() {
-        return instance;
-    }
-
-    public static AppsListCache getInstance() throws NotInitializedException {
+    public static AppsListCache getCurrentInstance() throws NotInitializedException {
         if (instance == null) {
             throw new NotInitializedException("AppListCache not loaded");
         }
         return instance;
     }
 
-    private void loadApps(Context context) {
+    public void loadAppsInFolder(Context context, Folder folder) {
+        ArrayList<String> appsToLoad = new ArrayList<>();
+        for (FileNode node : folder.getFiles()) {
+            if (!(node instanceof AppFile)) continue;
+            appsToLoad.add(((AppFile) node).getPackageName());
+        }
+        loadApps(context, appsToLoad);
+    }
+
+    public void loadAllApps(Context context) {
+        loadApps(context, null);
+    }
+
+    private void loadApps(Context context, List<String> appsToLoad) {
+        ArrayList<AppData> foundApps = new ArrayList<>();
+
         PackageManager pm = context.getPackageManager();
 
         Intent getAppsIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -60,24 +68,20 @@ public class AppsListCache {
         LauncherApps launcher = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
 
         List<UserHandle> users = manager.getUserProfiles();
-        int userCount = users.size();
-        int userIndex = 0;
         for (UserHandle user : users) {
             boolean userIsWork = user != Process.myUserHandle();
 
-            userIndex++;
-
             List<LauncherActivityInfo> userApps = launcher.getActivityList(null, user);
-            int userAppsCount = userApps.size();
 
-            int appIndex = 0;
             for (LauncherActivityInfo app : userApps) {
-                appIndex++;
-
                 ApplicationInfo appInfo = app.getApplicationInfo();
 
-                String label = appInfo.loadLabel(pm).toString();
                 String packageName = appInfo.packageName;
+
+                if (appsToLoad != null && !appsToLoad.contains(packageName))
+                    continue;
+
+                String label = appInfo.loadLabel(pm).toString();
                 Drawable icon = appInfo.loadIcon(pm);
 
                 List<ShortcutInfo> shortcutInfos = getShortcuts(context, packageName);
@@ -87,15 +91,12 @@ public class AppsListCache {
                 }
 
                 AppData file = new AppData(label, packageName, user, icon, shortcutInfos);
-                apps.add(file);
-
-                String indexString = appIndex + "/" + userAppsCount;
-                String userIndexString = userIndex + "/" + userCount;
-                String text = userIndexString + ", " + indexString + " " + packageName;
-                ((Activity) context).runOnUiThread(() -> statusView.setText(text));
+                foundApps.add(file);
             }
-            apps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
+            foundApps.sort(Comparator.comparing(app -> app.getName().toLowerCase()));
         }
+
+        apps = foundApps;
     }
 
     public List<ShortcutInfo> getShortcuts(Context context, String packageName) {
@@ -165,20 +166,20 @@ public class AppsListCache {
         return null;
     }
 
-    public void loadTestApps() {
+    public void loadTestApps(Context context) {
         ArrayList<AppData> apps = new ArrayList<>();
 
         AppData currentYoutube = getAppByPackage("com.google.android.youtube");
 
         ArrayList<ShortcutInfo> shortcuts = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+            shortcuts.add(new ShortcutInfo.Builder(context, "id1")
                     .setShortLabel("Explore")
                     .build());
-            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+            shortcuts.add(new ShortcutInfo.Builder(context, "id1")
                     .setShortLabel("Search")
                     .build());
-            shortcuts.add(new ShortcutInfo.Builder(this.statusView.getContext(), "id1")
+            shortcuts.add(new ShortcutInfo.Builder(context, "id1")
                     .setShortLabel("Subscriptions")
                     .build());
         }

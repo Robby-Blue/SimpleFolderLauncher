@@ -167,7 +167,7 @@ public class SearchActivity extends Activity {
 
         AppsListCache cache;
         try {
-            cache = AppsListCache.getInstance();
+            cache = AppsListCache.getCurrentInstance();
         } catch (Exception e) {
             finish();
             return null;

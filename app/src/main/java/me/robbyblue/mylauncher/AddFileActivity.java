@@ -1,12 +1,10 @@
 package me.robbyblue.mylauncher;
 
 import android.app.Activity;
-import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.UserHandle;
 import android.os.UserManager;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -84,7 +82,7 @@ public class AddFileActivity extends AppCompatActivity {
 
         // app selection recycler
         try {
-            apps = AppsListCache.getInstance().getAppsFiles();
+            apps = AppsListCache.getCurrentInstance().getAppsFiles();
         } catch (Exception e) {
             finish();
             return;

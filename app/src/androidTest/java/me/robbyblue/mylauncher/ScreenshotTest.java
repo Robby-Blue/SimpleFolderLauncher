@@ -163,7 +163,8 @@ public class ScreenshotTest {
     public void takeScreenshotOfSearch() throws InterruptedException {
         setTheme(false);
 
-        AppsListCache.getInstanceAssumeExists().loadTestApps();
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        AppsListCache.getInstance().loadTestApps(context);
 
         ActivityScenario.launch(SearchActivity.class);
 
