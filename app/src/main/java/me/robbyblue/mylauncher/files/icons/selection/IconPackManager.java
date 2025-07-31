@@ -50,6 +50,11 @@ public class IconPackManager {
             String iconPackName = info.loadLabel(pm).toString();
             Map<String, String> icons = parseAppFilter(pm, iconPackPackageName);
 
+            // added because of https://github.com/Robby-Blue/SimpleFolderLauncher/issues/51
+            if(icons == null) {
+                continue;
+            }
+
             for (String component : icons.keySet()) {
                 if (!component.split("/")[0].equals(packageName))
                     continue;
