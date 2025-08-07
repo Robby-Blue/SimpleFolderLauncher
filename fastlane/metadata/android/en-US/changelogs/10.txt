@@ -1,0 +1,6 @@
+Fixed
+- icon selection crash
+- crash on kill
+
+Improved
+- faster startup
