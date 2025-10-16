@@ -1,0 +1,73 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "name1",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "name1",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "name1",
+        "package": "example",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "file"
+      },
+      {
+        "name": "name2",
+        "package": "example",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "file"
+      },
+      {
+        "name": "name2",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "name2",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/name1": {
+    "files": [
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/name2": {
+    "files": [
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "~": {
+    "files": [
+      {
+        "name": "good_name_file",
+        "package": "example",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "file"
+      },
+      {
+        "name": "good_name_folder",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "name/with_slashes",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      {
+        "name": "..",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/name/with_slashes": {
+    "files": [
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  },
+  "~/good_name_folder": {
+    "files": [
+    ],
+    "widgets": {
+      "type": "list",
+      "size": 1,
+      "children": []
+    }
+  }
+}

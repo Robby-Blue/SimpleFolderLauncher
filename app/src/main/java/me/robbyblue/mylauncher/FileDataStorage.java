@@ -171,6 +171,7 @@ public class FileDataStorage {
 
     private ArrayList<FileNode> parseFilesList(JSONArray folderContentsJson, String folderName) {
         try {
+            ArrayList<String> folderNames = new ArrayList<>();
             ArrayList<FileNode> files = new ArrayList<>();
             for (int i = 0; i < folderContentsJson.length(); i++) {
                 JSONObject fileNodeJson = folderContentsJson.getJSONObject(i);
@@ -193,7 +194,9 @@ public class FileDataStorage {
                     IconData iconData = IconData.createIconDataFromJson(fileNodeJson);
                     files.add(new AppFile(name, packageName, iconData, user));
                 } else {
+                    if(folderNames.contains(name)) continue;
                     files.add(new Folder(name, folderName + "/" + name));
+                    folderNames.add(name);
                 }
             }
             return files;
@@ -339,8 +342,10 @@ public class FileDataStorage {
     public void renameFile(String parentFolder, int fileIndex, String newName) {
         ArrayList<FileNode> contents = getFolderContents(parentFolder).getFiles();
         FileNode item = contents.get(fileIndex);
-        item.setName(newName);
         if (item instanceof Folder) {
+            String fullPath = parentFolder + "/" + newName;
+            if (files.containsKey(fullPath)) return;
+
             // fix full path of folder and its subfolders
             Folder folder = ((Folder) item);
             String oldPath = folder.getFullPath();
@@ -348,6 +353,7 @@ public class FileDataStorage {
 
             updateFolderPath(folder, oldPath, newPath);
         }
+        item.setName(newName);
         storeFilesStructure();
     }
 

@@ -164,6 +164,15 @@ public class DataStorageTest {
         assertEquals(2, contents.getFiles().size());
     }
 
+    @Test
+    public void delete_duplicate_names() {
+        InputStream input = getClass().getResourceAsStream("/data_duplicate_names.json");
+        FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
+
+        Folder contents = fs.getFolderContents("~");
+        assertEquals(4, contents.getFiles().size());
+    }
+
     public static InputStream editJson(InputStream input, Function<JSONObject, JSONObject> editor) {
         try {
             String jsonStr;
