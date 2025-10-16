@@ -47,6 +47,10 @@ public class EditFileNameActivity extends Activity {
 
         nameField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId != EditorInfo.IME_ACTION_DONE) return false;
+
+            if (!FileNode.isValidName(nameField.getText().toString()))
+                return false;
+
             nameField.clearFocus();
 
             String newName = nameField.getText().toString();

@@ -34,4 +34,13 @@ public class FileNode {
         this.iconData = iconData;
     }
 
+
+    public static boolean isValidName(String name) {
+        if (name.contains("/"))
+            return false;
+        if (name.contains(".."))
+            return false;
+        return name.length() != 0;
+    }
+
 }

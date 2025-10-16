@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.AppSelectionAdapter;
+import me.robbyblue.mylauncher.files.FileNode;
 
 public class AddFileActivity extends AppCompatActivity {
 
@@ -96,7 +97,7 @@ public class AddFileActivity extends AppCompatActivity {
         nameField.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId != EditorInfo.IME_ACTION_DONE)
                 return false;
-            if (!isValidName(nameField.getText().toString()))
+            if (!FileNode.isValidName(nameField.getText().toString()))
                 return false;
 
             if (selectedType == FileType.UNSET)
@@ -115,14 +116,6 @@ public class AddFileActivity extends AppCompatActivity {
             finish();
             return true;
         });
-    }
-
-    private boolean isValidName(String name) {
-        if (name.contains("/"))
-            return false;
-        if (name.contains(".."))
-            return false;
-        return name.length() != 0;
     }
 
     public void select(int index) {

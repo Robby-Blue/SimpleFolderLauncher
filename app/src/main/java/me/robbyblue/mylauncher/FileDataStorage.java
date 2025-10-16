@@ -175,6 +175,9 @@ public class FileDataStorage {
             for (int i = 0; i < folderContentsJson.length(); i++) {
                 JSONObject fileNodeJson = folderContentsJson.getJSONObject(i);
                 String name = fileNodeJson.getString("name");
+                if(!FileNode.isValidName(name)){
+                    continue;
+                }
                 if (fileNodeJson.getString("type").equals("file")) {
                     String packageName = fileNodeJson.getString("package");
 
@@ -195,6 +198,7 @@ public class FileDataStorage {
             }
             return files;
         } catch (Exception e) {
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }

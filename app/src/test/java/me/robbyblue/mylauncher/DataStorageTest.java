@@ -155,6 +155,15 @@ public class DataStorageTest {
         assertNull(fs.getFolderContents("~/folder/subfolder/subsubfolder"));
     }
 
+    @Test
+    public void delete_bad_names() {
+        InputStream input = getClass().getResourceAsStream("/data_bad_names.json");
+        FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
+
+        Folder contents = fs.getFolderContents("~");
+        assertEquals(2, contents.getFiles().size());
+    }
+
     public static InputStream editJson(InputStream input, Function<JSONObject, JSONObject> editor) {
         try {
             String jsonStr;
