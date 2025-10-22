@@ -37,6 +37,8 @@ public class FileDataStorage {
 
     HashMap<String, Folder> files;
 
+    private ArrayList<String> folderPaths;
+
     private FileDataStorage() {
     }
 
@@ -122,6 +124,7 @@ public class FileDataStorage {
             }
 
             this.files = files;
+            deleteBadFolders();
             clearOrphans();
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,6 +149,30 @@ public class FileDataStorage {
         }
 
         files.keySet().removeIf(pathKey -> !usedPaths.contains(pathKey));
+    }
+
+    /**
+     * caused by some bug, it would happen that a folder links
+     * to child while said child doesn't exist anymore.
+     * this function deletes all those folder
+     */
+    private void deleteBadFolders() {
+        for (Folder folder : files.values()) {
+            ArrayList<FileNode> folderFiles = folder.getFiles();
+            Iterator<FileNode> iterator = folderFiles.iterator();
+            while (iterator.hasNext()) {
+                FileNode fileNode = iterator.next();
+                if (!(fileNode instanceof Folder)) {
+                    continue;
+                }
+                String filePath = ((Folder) fileNode).getFullPath();
+                if (files.containsKey(filePath)) {
+                    continue;
+                }
+                System.out.println("aa");
+                folderFiles.remove(fileNode);
+            }
+        }
     }
 
     private Folder parseFolder(JSONObject folderContentsJson, String folderName) {
@@ -176,7 +203,7 @@ public class FileDataStorage {
             for (int i = 0; i < folderContentsJson.length(); i++) {
                 JSONObject fileNodeJson = folderContentsJson.getJSONObject(i);
                 String name = fileNodeJson.getString("name");
-                if(!FileNode.isValidName(name)){
+                if (!FileNode.isValidName(name)) {
                     continue;
                 }
                 if (fileNodeJson.getString("type").equals("file")) {
@@ -194,7 +221,7 @@ public class FileDataStorage {
                     IconData iconData = IconData.createIconDataFromJson(fileNodeJson);
                     files.add(new AppFile(name, packageName, iconData, user));
                 } else {
-                    if(folderNames.contains(name)) continue;
+                    if (folderNames.contains(name)) continue;
                     files.add(new Folder(name, folderName + "/" + name));
                     folderNames.add(name);
                 }

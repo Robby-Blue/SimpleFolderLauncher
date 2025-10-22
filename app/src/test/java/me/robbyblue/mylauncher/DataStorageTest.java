@@ -173,6 +173,17 @@ public class DataStorageTest {
         assertEquals(4, contents.getFiles().size());
     }
 
+    @Test
+    public void delete_bad_folders() {
+        InputStream input = getClass().getResourceAsStream("/data_delete_bad_folders.json");
+        FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
+
+        Folder homeContents = fs.getFolderContents("~");
+        assertEquals(2, homeContents.getFiles().size());
+        Folder subContents = fs.getFolderContents("~");
+        assertEquals(2, subContents.getFiles().size());
+    }
+
     public static InputStream editJson(InputStream input, Function<JSONObject, JSONObject> editor) {
         try {
             String jsonStr;
