@@ -1,0 +1,4 @@
+Fixed
+- prevent crashes related to bad folder names
+- prevent crashes related to duplicate folders
+- partially prevent crashes related to dead folders
