@@ -37,8 +37,6 @@ public class FileDataStorage {
 
     HashMap<String, Folder> files;
 
-    private ArrayList<String> folderPaths;
-
     private FileDataStorage() {
     }
 
@@ -399,6 +397,7 @@ public class FileDataStorage {
         }
 
         folder.setFullPath(folder.getFullPath().replace(oldPath, newPath));
+        folderContents.setFullPath(folderContents.getFullPath().replace(oldPath, newPath));
 
         files.put(folder.getFullPath(), folderContents);
         files.remove(subfolderPath);
