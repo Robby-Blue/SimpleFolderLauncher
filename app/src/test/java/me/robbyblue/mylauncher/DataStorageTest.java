@@ -178,6 +178,7 @@ public class DataStorageTest {
         InputStream input = getClass().getResourceAsStream("/data_delete_bad_folders.json");
         FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
 
+        assertEquals(3, fs.files.size());
         Folder homeContents = fs.getFolderContents("~");
         assertEquals(2, homeContents.getFiles().size());
         Folder subContents = fs.getFolderContents("~");

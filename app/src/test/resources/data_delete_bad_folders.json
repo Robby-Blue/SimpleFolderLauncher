@@ -22,7 +22,15 @@
           "type": "no_icon"
         },
         "type": "file"
-      }
+      },
+      {
+        "name": "name_null",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      },
+      null
     ],
     "widgets": {
       "type": "list",
@@ -56,6 +64,13 @@
   },
   "~/name1": {
     "files": [
+      {
+        "name": "name1",
+        "icon": {
+          "type": "no_icon"
+        },
+        "type": "folder"
+      }
     ],
     "widgets": {
       "type": "list",
@@ -71,5 +86,6 @@
       "size": 1,
       "children": []
     }
-  }
+  },
+  "~/name_null": null
 }

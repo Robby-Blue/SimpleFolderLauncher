@@ -6,6 +6,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -110,14 +111,21 @@ public class FileDataStorage {
             while (iterator.hasNext()) {
                 String folderName = iterator.next();
                 if (jsonData.get(folderName) instanceof JSONObject) {
-                    JSONObject folderContentsJson = jsonData.getJSONObject(folderName);
-                    files.put(folderName, parseFolder(folderContentsJson, folderName));
-                } else {
-                    JSONArray folderContentsJson = jsonData.getJSONArray(folderName);
+                    try {
+                        JSONObject folderContentsJson = jsonData.getJSONObject(folderName);
+                        files.put(folderName, parseFolder(folderContentsJson, folderName));
+                    } catch (Exception e) {
 
-                    Folder folder = new Folder(folderName, folderName);
-                    folder.getFiles().addAll(parseFilesList(folderContentsJson, folderName));
-                    files.put(folderName, folder);
+                    }
+                } else {
+                    try {
+                        JSONArray folderContentsJson = jsonData.getJSONArray(folderName);
+                        Folder folder = new Folder(folderName, folderName);
+                        folder.getFiles().addAll(parseFilesList(folderContentsJson, folderName));
+                        files.put(folderName, folder);
+                    } catch (Exception e) {
+
+                    }
                 }
             }
 
@@ -167,38 +175,40 @@ public class FileDataStorage {
                 if (files.containsKey(filePath)) {
                     continue;
                 }
-                System.out.println("aa");
-                folderFiles.remove(fileNode);
+                iterator.remove();
             }
         }
     }
 
-    private Folder parseFolder(JSONObject folderContentsJson, String folderName) {
+    private Folder parseFolder(JSONObject folderContentsJson, String folderName) throws JSONException {
+        Folder folder = new Folder(folderName, folderName);
         try {
-            Folder folder = new Folder(folderName, folderName);
             folder.getFiles().addAll(parseFilesList(folderContentsJson.getJSONArray("files"), folderName));
-
-            if (folderContentsJson.has("widgetIds")) {
-                JSONArray widgetIds = folderContentsJson.getJSONArray("widgetIds");
-                for (int i = 0; i < widgetIds.length(); i++) {
-                    WidgetElement widgetElement = new WidgetElement(widgetIds.getInt(i));
-                    folder.getWidgetList().addChild(widgetElement);
-                }
-            } else if (folderContentsJson.has("widgets")) {
-                folder.setWidgetList(parseWidgetList(folderContentsJson.getJSONObject("widgets")));
-            }
-            return folder;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+
         }
+
+        if (folderContentsJson.has("widgetIds")) {
+            JSONArray widgetIds = folderContentsJson.getJSONArray("widgetIds");
+            for (int i = 0; i < widgetIds.length(); i++) {
+                WidgetElement widgetElement = new WidgetElement(widgetIds.getInt(i));
+                folder.getWidgetList().addChild(widgetElement);
+            }
+        } else if (folderContentsJson.has("widgets")) {
+            try {
+                folder.setWidgetList(parseWidgetList(folderContentsJson.getJSONObject("widgets")));
+            } catch (Exception e) {
+
+            }
+        }
+        return folder;
     }
 
-    private ArrayList<FileNode> parseFilesList(JSONArray folderContentsJson, String folderName) {
-        try {
-            ArrayList<String> folderNames = new ArrayList<>();
-            ArrayList<FileNode> files = new ArrayList<>();
-            for (int i = 0; i < folderContentsJson.length(); i++) {
+    private ArrayList<FileNode> parseFilesList(JSONArray folderContentsJson, String folderName) throws JSONException {
+        ArrayList<String> folderNames = new ArrayList<>();
+        ArrayList<FileNode> files = new ArrayList<>();
+        for (int i = 0; i < folderContentsJson.length(); i++) {
+            try {
                 JSONObject fileNodeJson = folderContentsJson.getJSONObject(i);
                 String name = fileNodeJson.getString("name");
                 if (!FileNode.isValidName(name)) {
@@ -223,22 +233,21 @@ public class FileDataStorage {
                     files.add(new Folder(name, folderName + "/" + name));
                     folderNames.add(name);
                 }
+            }catch (Exception e){
+
             }
-            return files;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
         }
+        return files;
     }
 
-    private WidgetList parseWidgetList(JSONObject jsonObject) {
+    private WidgetList parseWidgetList(JSONObject jsonObject) throws JSONException {
         WidgetList widgetList = new WidgetList();
 
-        try {
-            widgetList.setSize(jsonObject.getDouble("size"));
+        widgetList.setSize(jsonObject.getDouble("size"));
 
-            JSONArray childrenArray = jsonObject.getJSONArray("children");
-            for (int i = 0; i < childrenArray.length(); i++) {
+        JSONArray childrenArray = jsonObject.getJSONArray("children");
+        for (int i = 0; i < childrenArray.length(); i++) {
+            try {
                 JSONObject child = childrenArray.getJSONObject(i);
 
                 String type = child.getString("type");
@@ -250,30 +259,29 @@ public class FileDataStorage {
                     WidgetList nestedList = parseWidgetList(child);
                     widgetList.addChild(nestedList);
                 }
+            } catch (Exception e) {
+
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return widgetList;
     }
 
-    private WidgetElement parseWidgetElement(JSONObject jsonObject) {
-        try {
-            WidgetElement widgetElement = new WidgetElement(jsonObject.getInt("widgetId"));
-            widgetElement.setSize(jsonObject.getDouble("size"));
-            return widgetElement;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private WidgetElement parseWidgetElement(JSONObject jsonObject) throws JSONException {
+        WidgetElement widgetElement = new WidgetElement(jsonObject.getInt("widgetId"));
+        widgetElement.setSize(jsonObject.getDouble("size"));
+        return widgetElement;
     }
 
     public void storeFilesStructure() {
         try {
             JSONObject jsonData = new JSONObject();
             for (String folderName : files.keySet()) {
-                jsonData.put(folderName, jsonifyFilesStructureFolder(files.get(folderName)));
+                try {
+                    jsonData.put(folderName, jsonifyFilesStructureFolder(files.get(folderName)));
+                } catch (Exception e) {
+
+                }
             }
             writeFile(structureFile, jsonData.toString(2));
         } catch (Exception e) {
@@ -281,70 +289,69 @@ public class FileDataStorage {
         }
     }
 
-    private JSONObject jsonifyFilesStructureFolder(Folder folder) {
-        try {
-            JSONObject folderObject = new JSONObject();
-            JSONArray filesArray = new JSONArray();
-            for (FileNode fileNode : folder.getFiles()) {
-                JSONObject fileJson = new JSONObject();
-                fileJson.put("name", fileNode.getName());
-                fileJson.put("icon", fileNode.getIconData().toJson());
-                if (fileNode instanceof AppFile) {
-                    UserManager manager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-                    long serialNumber = manager.getSerialNumberForUser(((AppFile) fileNode).getUser());
+    private JSONObject jsonifyFilesStructureFolder(Folder folder) throws JSONException {
+        JSONObject folderObject = new JSONObject();
+        JSONArray filesArray = new JSONArray();
+        for (FileNode fileNode : folder.getFiles()) {
+            JSONObject fileJson = new JSONObject();
+            fileJson.put("name", fileNode.getName());
+            fileJson.put("icon", fileNode.getIconData().toJson());
+            if (fileNode instanceof AppFile) {
+                UserManager manager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+                long serialNumber = manager.getSerialNumberForUser(((AppFile) fileNode).getUser());
 
-                    fileJson.put("type", "file");
-                    fileJson.put("package", ((AppFile) fileNode).getPackageName());
-                    fileJson.put("userHandleSerialNumber", serialNumber);
-                } else if (fileNode instanceof Folder) {
-                    fileJson.put("type", "folder");
-                }
-                filesArray.put(fileJson);
+                fileJson.put("type", "file");
+                fileJson.put("package", ((AppFile) fileNode).getPackageName());
+                fileJson.put("userHandleSerialNumber", serialNumber);
+            } else if (fileNode instanceof Folder) {
+                fileJson.put("type", "folder");
             }
-            folderObject.put("files", filesArray);
-
-            JSONObject widgetsArray = jsonifyWidgetList(folder.getWidgetList());
-
-            folderObject.put("widgets", widgetsArray);
-            return folderObject;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            filesArray.put(fileJson);
         }
+        folderObject.put("files", filesArray);
+
+        try {
+            JSONObject widgetsArray = jsonifyWidgetList(folder.getWidgetList());
+            folderObject.put("widgets", widgetsArray);
+        } catch (Exception e) {
+
+        }
+
+        return folderObject;
     }
 
-    private JSONObject jsonifyWidgetList(WidgetList widgetList) {
+    private JSONObject jsonifyWidgetList(WidgetList widgetList) throws JSONException {
         JSONArray childrenArray = new JSONArray();
         for (WidgetLayout widgetLayout : widgetList.getChildren()) {
             if (widgetLayout instanceof WidgetElement) {
-                childrenArray.put(jsonifyWidget((WidgetElement) widgetLayout));
+                try {
+                    childrenArray.put(jsonifyWidget((WidgetElement) widgetLayout));
+                } catch (Exception e) {
+
+                }
             }
             if (widgetLayout instanceof WidgetList) {
-                childrenArray.put(jsonifyWidgetList((WidgetList) widgetLayout));
+                try {
+                    childrenArray.put(jsonifyWidgetList((WidgetList) widgetLayout));
+                } catch (Exception e) {
+
+                }
             }
         }
 
         JSONObject widgetObject = new JSONObject();
-        try {
-            widgetObject.put("type", "list");
-            widgetObject.put("size", widgetList.getSize());
-            widgetObject.put("children", childrenArray);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        widgetObject.put("type", "list");
+        widgetObject.put("size", widgetList.getSize());
+        widgetObject.put("children", childrenArray);
 
         return widgetObject;
     }
 
-    private JSONObject jsonifyWidget(WidgetElement widgetElement) {
+    private JSONObject jsonifyWidget(WidgetElement widgetElement) throws JSONException {
         JSONObject widgetObject = new JSONObject();
-        try {
-            widgetObject.put("type", "widget");
-            widgetObject.put("size", widgetElement.getSize());
-            widgetObject.put("widgetId", widgetElement.getAppWidgetId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        widgetObject.put("type", "widget");
+        widgetObject.put("size", widgetElement.getSize());
+        widgetObject.put("widgetId", widgetElement.getAppWidgetId());
 
         return widgetObject;
     }
