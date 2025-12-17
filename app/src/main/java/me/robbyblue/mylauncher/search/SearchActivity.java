@@ -52,10 +52,11 @@ public class SearchActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean autoOpenOnlyResult = prefs.getBoolean("pref_search_auto_open_only", false);
         boolean showShortcuts = prefs.getBoolean("pref_search_show_shortcuts", true);
+        boolean normalizeUmlaute = prefs.getBoolean("pref_search_normalize_umlaute", true);
 
         int appTextColor = prefs.getInt("pref_app_text_color", Color.parseColor("#EEEEEE"));
 
-        searchableItems = indexSearchableItems(showShortcuts);
+        searchableItems = indexSearchableItems(showShortcuts, normalizeUmlaute);
 
         recycler = findViewById(R.id.app_recycler);
 
@@ -108,6 +109,11 @@ public class SearchActivity extends Activity {
                 if (query.contains(".")) {
                     searchResults = search.searchDots(query);
                 } else {
+                    if(normalizeUmlaute){
+                        query = query.replace("ä", "a").replace("ö", "o")
+                                .replace("ü", "u");
+                    }
+
                     searchResults = search.searchFiles(query, searchableItems);
                     if (autoOpenOnlyResult && searchResults.size() == 1) {
                         openFirstResult();
@@ -159,7 +165,7 @@ public class SearchActivity extends Activity {
         return gestureDetector.onTouchEvent(event);
     }
 
-    private ArrayList<NamedItem> indexSearchableItems(boolean showShortcuts) {
+    private ArrayList<NamedItem> indexSearchableItems(boolean showShortcuts, boolean normalizeUmlaute) {
         // add apps by their actual names
         ArrayList<NamedItem> items = new ArrayList<>();
 
@@ -203,6 +209,12 @@ public class SearchActivity extends Activity {
                 UserHandle user = ((AppFile) fileNode).getUser();
                 AppFile app = new AppFile(fileNode.getName(), packageName, new AppIconData(packageName), user);
                 items.addAll(search.indexSearchableItem(app));
+            }
+        }
+
+        if(normalizeUmlaute) {
+            for (NamedItem item : items) {
+                item.normalizeUmlaute();
             }
         }
         return items;

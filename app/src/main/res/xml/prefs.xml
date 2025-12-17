@@ -56,6 +56,14 @@
             android:summaryOn="results will contains apps' shortcuts"
             android:title="show shortcuts"
             app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_search_normalize_umlaute"
+            android:summaryOff="won't normalize umlaute"
+            android:summaryOn="will normalize umlaute"
+            android:title="normalize umlaute"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -4,7 +4,7 @@ import me.robbyblue.mylauncher.files.FileNode;
 
 public class NamedItem {
 
-    private final String name;
+    private String name;
     private final FileNode fileNode;
 
     public NamedItem(String name, FileNode fileNode) {
@@ -18,5 +18,10 @@ public class NamedItem {
 
     public FileNode getFileNode() {
         return fileNode;
+    }
+
+    public void normalizeUmlaute() {
+        this.name = name.replace("ä", "a").replace("ö", "o")
+                .replace("ü", "u");
     }
 }
