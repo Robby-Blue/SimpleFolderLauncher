@@ -92,21 +92,23 @@ public class FileDataStorage {
 
     public void loadFromInputStream(InputStream inputStream) {
         try {
-            HashMap<String, Folder> files = new HashMap<>();
-            files.put("~", new Folder("~", "~"));
-
-            if (inputStream == null) {
-                this.files = files;
-                return;
-            }
-
             String fileContents = readInputStream(inputStream);
             if (fileContents == null) {
-                this.files = files;
                 return;
             }
 
             JSONObject jsonData = new JSONObject(fileContents);
+            loadFromJson(jsonData);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void loadFromJson(JSONObject jsonData) {
+        try {
+            HashMap<String, Folder> files = new HashMap<>();
+            files.put("~", new Folder("~", "~"));
+
             Iterator<String> iterator = jsonData.keys();
             while (iterator.hasNext()) {
                 String folderName = iterator.next();
@@ -371,6 +373,20 @@ public class FileDataStorage {
         }
     }
 
+    public void importFromInputStream(InputStream is){
+        try {
+            String contents = readInputStream(is);
+            JSONObject data = new JSONObject(contents);
+
+            data = removeWidgetsFromJson(data);
+
+            loadFromJson(data);
+            storeFilesStructure();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
     private JSONObject removeWidgetsFromJson(JSONObject data){
         try {
             for (Iterator<String> it = data.keys(); it.hasNext(); ) {
@@ -382,6 +398,7 @@ public class FileDataStorage {
         }
         return data;
     }
+
 
     public void createFile(String parentFolder, AppFile appFile) {
         ArrayList<FileNode> parentFolderContents = getFolderContents(parentFolder).getFiles();
