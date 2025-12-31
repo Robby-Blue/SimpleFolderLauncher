@@ -275,17 +275,22 @@ public class FileDataStorage {
 
     public void storeFilesStructure() {
         try {
-            JSONObject jsonData = new JSONObject();
-            for (String folderName : files.keySet()) {
-                try {
-                    jsonData.put(folderName, jsonifyFilesStructureFolder(files.get(folderName)));
-                } catch (Exception e) {
-
-                }
-            }
+            JSONObject jsonData = getFileStructureAsJson();
             writeFile(structureFile, jsonData.toString(2));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public JSONObject getFileStructureAsJson() {
+        try {
+            JSONObject jsonData = new JSONObject();
+            for (String folderName : files.keySet()) {
+                jsonData.put(folderName, jsonifyFilesStructureFolder(files.get(folderName)));
+            }
+            return jsonData;
+        } catch (Exception e) {
+            throw new RuntimeException();
         }
     }
 
@@ -354,6 +359,28 @@ public class FileDataStorage {
         widgetObject.put("widgetId", widgetElement.getAppWidgetId());
 
         return widgetObject;
+    }
+
+    public String getDataAsJsonString() {
+        try {
+            JSONObject data = getFileStructureAsJson();
+            data = removeWidgetsFromJson(data);
+            return data.toString(2);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private JSONObject removeWidgetsFromJson(JSONObject data){
+        try {
+            for (Iterator<String> it = data.keys(); it.hasNext(); ) {
+                String key = it.next();
+                data.getJSONObject(key).put("widgets", new JSONObject());
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return data;
     }
 
     public void createFile(String parentFolder, AppFile appFile) {
