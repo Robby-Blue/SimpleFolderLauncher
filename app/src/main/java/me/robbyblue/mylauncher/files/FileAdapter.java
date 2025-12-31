@@ -54,7 +54,7 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
         holder.icon.setImageDrawable(file.getIconData().getIconDrawable());
 
-        holder.nameLabel.setText(file.getName());
+        holder.nameLabel.setText(file.getDisplayName(holder.view.getContext()));
 
         if (file instanceof Folder) {
             if (file.getName().equals("..")) {
@@ -67,7 +67,6 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
         }
 
         holder.view.setOnClickListener((v) -> {
-            Context context = v.getContext();
             if (file instanceof Folder) {
                 String fullPath = ((Folder) file).getFullPath();
                 if (file.getName().equals("..")) {

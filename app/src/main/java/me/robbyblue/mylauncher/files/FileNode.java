@@ -1,5 +1,7 @@
 package me.robbyblue.mylauncher.files;
 
+import android.content.Context;
+
 import me.robbyblue.mylauncher.files.icons.IconData;
 import me.robbyblue.mylauncher.files.icons.NoIconData;
 
@@ -19,6 +21,10 @@ public class FileNode {
     }
 
     public String getName() {
+        return name;
+    }
+
+    public String getDisplayName(Context context) {
         return name;
     }
 

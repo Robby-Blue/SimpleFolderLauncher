@@ -28,6 +28,10 @@ public class FileSearchResult extends SearchResult {
         return fileNode;
     }
 
+    protected String getDiplayName(SearchActivity searchActivity) {
+        return this.fileNode.getDisplayName(searchActivity);
+    }
+
     @Override
     public int getTextColor() {
         if (fileNode instanceof Folder) {

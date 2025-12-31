@@ -25,17 +25,43 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="gestures"
+        android:title="appearance"
         app:iconSpaceReserved="false">
-        <androidx.preference.DropDownPreference
-            android:defaultValue="none"
-            android:entries="@array/pref_doubletap"
-            android:entryValues="@array/pref_doubletap_values"
-            android:key="pref_gesture_doubletap"
-            android:title="on double tap"
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#EEEEEE"
+            android:key="pref_app_text_color"
+            android:summary="the text color used for the app names"
+            android:title="app text color"
+            app:iconSpaceReserved="false" />
 
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#00CC00"
+            android:key="pref_folder_text_color"
+            android:summary="the text color used for the folder names"
+            android:title="folder text color"
+            app:iconSpaceReserved="false" />
+
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#EEEEEE"
+            android:key="pref_shortcut_text_color"
+            android:summary="the text color used for shortcuts"
+            android:title="shortcut text color"
+            app:iconSpaceReserved="false" />
+
+        <me.robbyblue.mylauncher.settings.ColorPreference
+            android:defaultValue="#00CC00"
+            android:key="pref_back_text_color"
+            android:summary="the text color used for the back button (the ..)"
+            android:title="back text color"
+            app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="pref_show_trailing_slash"
+            android:summaryOff="folder names don't include a trailing &quot;/&quot;"
+            android:summaryOn="folder names include a trailing &quot;/&quot;"
+            android:title="trailing slash for folders"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -67,34 +93,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="colors"
+        android:title="gestures"
         app:iconSpaceReserved="false">
-        <me.robbyblue.mylauncher.settings.ColorPreference
-            android:defaultValue="#EEEEEE"
-            android:key="pref_app_text_color"
-            android:summary="the text color used for the app names"
-            android:title="app text color"
-            app:iconSpaceReserved="false" />
+        <androidx.preference.DropDownPreference
+            android:defaultValue="none"
+            android:entries="@array/pref_doubletap"
+            android:entryValues="@array/pref_doubletap_values"
+            android:key="pref_gesture_doubletap"
+            android:title="on double tap"
 
-        <me.robbyblue.mylauncher.settings.ColorPreference
-            android:defaultValue="#00CC00"
-            android:key="pref_folder_text_color"
-            android:summary="the text color used for the folder names"
-            android:title="folder text color"
-            app:iconSpaceReserved="false" />
-
-        <me.robbyblue.mylauncher.settings.ColorPreference
-            android:defaultValue="#EEEEEE"
-            android:key="pref_shortcut_text_color"
-            android:summary="the text color used for shortcuts"
-            android:title="shortcut text color"
-            app:iconSpaceReserved="false" />
-
-        <me.robbyblue.mylauncher.settings.ColorPreference
-            android:defaultValue="#00CC00"
-            android:key="pref_back_text_color"
-            android:summary="the text color used for the back button (the ..)"
-            android:title="back text color"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 </PreferenceScreen>
