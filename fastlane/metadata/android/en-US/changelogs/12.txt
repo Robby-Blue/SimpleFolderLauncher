@@ -1,0 +1,11 @@
+Added
+- exporting the file structure
+- importing the file structure
+- displaying folders with trailing slashes
+- normalizing umlaute in search
+
+Improved
+- reorganize settings screen
+
+Fixed
+- try to prevent dead folders
