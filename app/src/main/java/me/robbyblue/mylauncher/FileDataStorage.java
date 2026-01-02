@@ -51,7 +51,7 @@ public class FileDataStorage {
                 e.printStackTrace();
             }
         } else {
-            this.loadFromInputStream(null);
+            this.files = createEmptyFolderStructure();
         }
     }
 
@@ -93,9 +93,6 @@ public class FileDataStorage {
     public void loadFromInputStream(InputStream inputStream) {
         try {
             String fileContents = readInputStream(inputStream);
-            if (fileContents == null) {
-                return;
-            }
 
             JSONObject jsonData = new JSONObject(fileContents);
             loadFromJson(jsonData);
@@ -497,8 +494,17 @@ public class FileDataStorage {
     }
 
     public Folder getFolderContents(String path) {
+        if(path.equals("~") && !files.containsKey(path) ) {
+            files.put("~", new Folder("~", "~"));
+        }
         if (files.containsKey(path)) return files.get(path);
         return null;
+    }
+
+    private HashMap<String, Folder> createEmptyFolderStructure() {
+        HashMap<String, Folder> files = new HashMap<>();
+        files.put("~", new Folder("~", "~"));
+        return files;
     }
 
     private String readInputStream(InputStream inputStream) {
@@ -513,8 +519,7 @@ public class FileDataStorage {
 
             return res.toString();
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
