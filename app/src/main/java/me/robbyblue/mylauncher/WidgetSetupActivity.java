@@ -4,8 +4,10 @@ import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ComponentName;
 import android.os.Bundle;
 import android.text.InputType;
+import android.net.Uri;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,29 +30,60 @@ public class WidgetSetupActivity extends AppCompatActivity {
 
     boolean isInRow = false;
     String folder;
+    int pendingWidgetId = -1;
+    boolean pendingNeedsConfig = false;
+    WidgetElement pendingElement = null;
+
+    ActivityResultLauncher<Intent> configureIntentLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (pendingElement == null) return;
+
+        if (result.getResultCode() != RESULT_OK) {
+            AppWidgetHost host = new AppWidgetHost(this, MainActivity.APPWIDGET_HOST_ID);
+            host.deleteAppWidgetId(pendingElement.getAppWidgetId());
+            pendingElement = null;
+            return;
+        }
+
+        addConfiguredWidget(pendingElement, isInRow);
+        pendingElement = null;
+    });
 
     ActivityResultLauncher<Intent> pickWidgetLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() != RESULT_OK) return;
 
-        FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
-
         int appWidgetId = result.getData().getExtras().getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
 
-        WidgetElement element = new WidgetElement(appWidgetId, 1);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        android.appwidget.AppWidgetProviderInfo widgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
 
-        WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
+        pendingWidgetId = appWidgetId;
+        pendingNeedsConfig = (widgetInfo != null && widgetInfo.configure != null);
+
+        if (pendingNeedsConfig) {
+            pendingElement = new WidgetElement(appWidgetId, 100);
+        }
 
         if (isInRow) {
+            showSizeDialog(true, pendingWidgetId, pendingNeedsConfig);
+        } else {
+            showSizeDialog(false, pendingWidgetId, pendingNeedsConfig);
+        }
+    });
+
+    private void addConfiguredWidget(WidgetElement element, boolean inRow) {
+        FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
+        WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
+
+        if (inRow) {
             WidgetLayout lastElement = widgetList.getChildren().get(widgetList.getChildren().size() - 1);
             ((WidgetList) lastElement).addChild(element);
-
-            showSizeDialog(element, this);
         } else {
             widgetList.addChild(element);
         }
 
         fs.storeFilesStructure();
-    });
+        showLayout();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +117,7 @@ public class WidgetSetupActivity extends AppCompatActivity {
             pickWidget(false);
         });
         findViewById(R.id.add_row).setOnClickListener((l) -> {
-            showSizeDialog(null, this);
+            showSizeDialog(false, -1, false);
         });
         findViewById(R.id.add_widget_to_row).setOnClickListener((l) -> {
             if (widgetList.getChildren().size() == 0) {
@@ -134,17 +167,17 @@ public class WidgetSetupActivity extends AppCompatActivity {
         this.isInRow = isInRow;
     }
 
-    public void showSizeDialog(WidgetLayout widget, Context ctx) {
-        boolean isWidget = widget != null;
+    private void showSizeDialog(boolean isWidget, int widgetId, boolean needsConfig) {
+        boolean creatingRow = !isWidget && widgetId == -1;
 
-        EditText input = new EditText(ctx);
+        EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         int maxNumber = isWidget ? 100 : 300;
 
         LinearLayout titleLayout = getTitleLayout(isWidget, maxNumber);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("enter size (0-" + maxNumber + ")");
         builder.setView(input);
         builder.setCustomTitle(titleLayout);
@@ -159,22 +192,65 @@ public class WidgetSetupActivity extends AppCompatActivity {
                     return;
                 }
                 double size = number / 100d;
-                if (isWidget) {
-                    widget.setSize(size);
-                } else {
-                    WidgetList list = new WidgetList(size);
+
+                if (creatingRow) {
+                    WidgetList list = new WidgetList(number / 100d);
                     WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
                     widgetList.addChild(list);
+                    fs.storeFilesStructure();
+                    showLayout();
+                } else if (needsConfig) {
+                    launchConfigForWidget(widgetId, number, isWidget);
+                } else {
+                    addWidgetDirectly(widgetId, number, isWidget);
                 }
-                fs.storeFilesStructure();
-                showLayout();
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "invalid number", Toast.LENGTH_LONG).show();
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            if (needsConfig && widgetId != -1) {
+                AppWidgetHost host = new AppWidgetHost(this, MainActivity.APPWIDGET_HOST_ID);
+                host.deleteAppWidgetId(widgetId);
+                pendingElement = null;
+            }
+        });
         builder.show();
+    }
+
+    private void addWidgetDirectly(int appWidgetId, double size, boolean inRow) {
+        WidgetElement element = new WidgetElement(appWidgetId, size / 100d);
+
+        FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
+        WidgetList widgetList = fs.getFolderContents(folder).getWidgetList();
+
+        if (inRow) {
+            WidgetLayout lastElement = widgetList.getChildren().get(widgetList.getChildren().size() - 1);
+            ((WidgetList) lastElement).addChild(element);
+        } else {
+            widgetList.addChild(element);
+        }
+
+        fs.storeFilesStructure();
+        showLayout();
+    }
+
+    private void launchConfigForWidget(int appWidgetId, double size, boolean inRow) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        android.appwidget.AppWidgetProviderInfo widgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId);
+
+        if (widgetInfo != null && widgetInfo.configure != null) {
+            pendingElement = new WidgetElement(appWidgetId, size / 100d);
+            this.isInRow = inRow;
+
+            ComponentName configureComponent = widgetInfo.configure;
+            Intent configureIntent = new Intent().setComponent(configureComponent);
+            configureIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            configureIntent.putExtra("folder", folder);
+            configureIntent.setData(Uri.parse("widget:" + appWidgetId));
+            configureIntentLauncher.launch(configureIntent);
+        }
     }
 
     @NonNull

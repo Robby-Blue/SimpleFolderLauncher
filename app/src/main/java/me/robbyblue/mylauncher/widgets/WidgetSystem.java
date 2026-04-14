@@ -60,7 +60,11 @@ public class WidgetSystem {
             minWidth = minHeight = 1;
         }
 
-        int height = (int) (screenWidth * minHeight / minWidth);
+        double heightValue = minHeight / (double) minWidth;
+        if (widget.getSize() > 0) {
+            heightValue = widget.getSize();
+        }
+        int height = (int) (screenWidth * heightValue);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(screenWidth, height);
         childLayout.setLayoutParams(layoutParams);
         childLayout.setGravity(Gravity.CENTER);
@@ -94,6 +98,7 @@ public class WidgetSystem {
         LinearLayout childLayout = new LinearLayout(ctx);
 
         int width = (int) (parentWidth * widget.getSize());
+        if (width < 20) width = 20;
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, parentHeight);
         childLayout.setLayoutParams(layoutParams);
