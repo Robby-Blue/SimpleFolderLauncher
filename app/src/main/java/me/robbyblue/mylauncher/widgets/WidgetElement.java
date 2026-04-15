@@ -4,7 +4,7 @@ public class WidgetElement extends WidgetLayout {
 
     int appWidgetId;
 
-    public WidgetElement(int appWidgetId, int size){
+    public WidgetElement(int appWidgetId, double size){
         super();
         this.appWidgetId = appWidgetId;
         this.size = size;

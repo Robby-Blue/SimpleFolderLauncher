@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -367,12 +368,13 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         AppWidgetHost appWidgetHost = new AppWidgetHost(ctx, APPWIDGET_HOST_ID);
 
-        HashMap<WidgetLayout, LinearLayout> layouts = WidgetSystem.createLayout(widgets, widgetContainer, false);
+        HashMap<WidgetLayout, FrameLayout> layouts = WidgetSystem.createLayout(widgets, widgetContainer, false, appWidgetHost);
+        appWidgetHost.startListening();
 
         for (WidgetLayout widgetLayout : layouts.keySet()) {
-            if (!(widgetLayout instanceof WidgetElement)) return;
+            if (!(widgetLayout instanceof WidgetElement)) continue;
 
-            LinearLayout layout = layouts.get(widgetLayout);
+            FrameLayout wrapper = layouts.get(widgetLayout);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
 
             int id = ((WidgetElement) widgetLayout).getAppWidgetId();
@@ -382,17 +384,15 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
 
-            AppWidgetHostView hostView = appWidgetHost.createView(ctx, id, appWidgetManager.getAppWidgetInfo(id));
-
-            layout.addView(hostView);
-            appWidgetHost.startListening();
-
             int minWidth = appWidgetInfo.minWidth;
             int minHeight = appWidgetInfo.minHeight;
             int maxWidth = appWidgetInfo.minWidth;
             int maxHeight = appWidgetInfo.minHeight;
 
-            hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
+            AppWidgetHostView hostView = (AppWidgetHostView) wrapper.getChildAt(0);
+            if (hostView != null) {
+                hostView.updateAppWidgetSize(new Bundle(), minWidth, minHeight, maxWidth, maxHeight);
+            }
         }
     }
 
