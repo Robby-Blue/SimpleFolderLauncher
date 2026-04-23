@@ -32,8 +32,10 @@ public class EditFileNameActivity extends Activity {
         String currentName = file.getName();
 
         EditText nameField = findViewById(R.id.new_name_field);
+        nameField.setSelectAllOnFocus(true);
         nameField.requestFocus();
         nameField.setText(currentName);
+        nameField.selectAll();
 
         long startTime = System.currentTimeMillis();
 
@@ -55,6 +57,7 @@ public class EditFileNameActivity extends Activity {
 
             String newName = nameField.getText().toString();
             fs.renameFile(parentFolder, fileIndex, newName);
+            setResult(RESULT_OK);
             finish();
             return true;
         });

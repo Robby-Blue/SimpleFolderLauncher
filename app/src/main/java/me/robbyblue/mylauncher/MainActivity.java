@@ -5,11 +5,15 @@ import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.LauncherActivityInfo;
 import android.content.pm.LauncherApps;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.view.ContextMenu;
@@ -30,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +42,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import me.robbyblue.mylauncher.files.AppFile;
 import me.robbyblue.mylauncher.files.FileAdapter;
@@ -52,12 +58,26 @@ import me.robbyblue.mylauncher.widgets.WidgetList;
 import me.robbyblue.mylauncher.widgets.WidgetSystem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FileAdapter.OnItemClickListener {
+
+    private enum UiMode {
+        NORMAL,
+        MOVE
+    }
+
+    private static final String STATE_CURRENT_FOLDER = "currentFolder";
+    private static final String STATE_UI_MODE = "uiMode";
 
     TextView folderPathView;
     RecyclerView recycler;
     String currentFolder;
     int longClickedId;
+    UiMode uiMode = UiMode.NORMAL;
+    FileAdapter fileAdapter;
+    ItemTouchHelper itemTouchHelper;
+    View moveModeExit;
+    int moveStartPosition = RecyclerView.NO_POSITION;
+    int moveTargetPosition = RecyclerView.NO_POSITION;
 
     GestureDetectorCompat gestureDetector;
 
@@ -103,6 +123,11 @@ public class MainActivity extends AppCompatActivity {
         showFolder(folder);
     });
 
+    ActivityResultLauncher<Intent> settingsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() != RESULT_OK) return;
+        showFolder(currentFolder);
+    });
+
     /**
      * reloads current folder when finishing activity
      * and saves the file system to the file
@@ -119,6 +144,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         folderPathView = findViewById(R.id.folder_path_text);
+        String initialFolder = "~";
+        boolean restoreMoveMode = false;
+        if (savedInstanceState != null) {
+            initialFolder = savedInstanceState.getString(STATE_CURRENT_FOLDER, "~");
+            restoreMoveMode = UiMode.MOVE.name().equals(savedInstanceState.getString(STATE_UI_MODE, UiMode.NORMAL.name()));
+        }
 
         IconPackManager.getInstance(getPackageManager());
         File structureFile = new File(getFilesDir(), "filesstructure.json");
@@ -127,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
         appCache.loadAppsInFolder(this, dataStorage.getFolderContents("~"));
 
         setupUi();
+        showFolder(initialFolder);
+        setMoveMode(restoreMoveMode);
 
         new Thread(() -> {
             appCache.loadAllApps(this);
@@ -136,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupUi() {
         recycler = findViewById(R.id.app_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
+        moveModeExit = findViewById(R.id.move_mode_exit);
+        moveModeExit.setOnClickListener((v) -> setMoveMode(false));
 
         registerForContextMenu(findViewById(R.id.background));
         registerForContextMenu(recycler);
@@ -147,6 +182,10 @@ public class MainActivity extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if (isMoveModeActive()) {
+                    setMoveMode(false);
+                    return;
+                }
                 showFolder("..");
             }
         };
@@ -157,13 +196,72 @@ public class MainActivity extends AppCompatActivity {
 
         homeGestureListener.setHomeGestureCallback(this::onSwipe, this::onDoubleTap);
 
-        recycler.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
-        findViewById(R.id.background).setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+        recycler.setOnTouchListener((v, event) -> {
+            if (isMoveModeActive()) return false;
+            return gestureDetector.onTouchEvent(event);
+        });
+        findViewById(R.id.background).setOnTouchListener((v, event) -> {
+            if (isMoveModeActive()) return false;
+            return gestureDetector.onTouchEvent(event);
+        });
 
-        showFolder("~");
+        itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0) {
+            @Override
+            public boolean isLongPressDragEnabled() {
+                return isMoveModeActive();
+            }
+
+            @Override
+            public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                int position = viewHolder.getAdapterPosition();
+                if (!isMoveModeActive() || fileAdapter == null || !fileAdapter.canMove(position)) {
+                    return makeMovementFlags(0, 0);
+                }
+                return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+            }
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                if (!isMoveModeActive() || fileAdapter == null) return false;
+                int from = viewHolder.getAdapterPosition();
+                int to = target.getAdapterPosition();
+                if (moveStartPosition == RecyclerView.NO_POSITION) {
+                    beginPendingMove(from);
+                }
+                if (!fileAdapter.moveItem(from, to)) return false;
+                moveTargetPosition = to;
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && viewHolder != null) {
+                    beginPendingMove(viewHolder.getAdapterPosition());
+                    viewHolder.itemView.setElevation(8);
+                    viewHolder.itemView.setBackgroundResource(R.drawable.drag_item_bg);
+                }
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                viewHolder.itemView.setElevation(0);
+                viewHolder.itemView.setBackground(null);
+                finishPendingMove();
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recycler);
     }
 
     private boolean onSwipe(float velocityX, float velocityY) {
+        if (isMoveModeActive()) {
+            return false;
+        }
         if (Math.abs(velocityX) > Math.abs(velocityY) * 0.6) {
             return false;
         }
@@ -197,6 +295,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean onDoubleTap() {
+        if (isMoveModeActive()) {
+            return false;
+        }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String action = prefs.getString("pref_gesture_doubletap", "none");
 
@@ -247,6 +348,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (isMoveModeActive()) {
+            return super.onTouchEvent(event);
+        }
         if (gestureDetector == null) {
             return super.onTouchEvent(event);
         }
@@ -259,6 +363,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo
             menuInfo) {
+        if (isMoveModeActive()) {
+            return;
+        }
         super.onCreateContextMenu(menu, v, menuInfo);
 
         if (isContextMenuOpen) {
@@ -286,6 +393,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        if (isMoveModeActive()) {
+            return true;
+        }
+        if (item.getItemId() == R.id.action_move_mode) {
+            setMoveMode(true);
+            return true;
+        }
         if (item.getItemId() == R.id.action_add_file) {
             Intent intent = new Intent(this, AddFileActivity.class);
             intent.putExtra("folder", currentFolder);
@@ -301,7 +415,8 @@ public class MainActivity extends AppCompatActivity {
         }
         if (item.getItemId() == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            settingsLauncher.launch(intent);
+            return true;
         }
 
         if (item.getItemId() == R.id.action_change_icon) {
@@ -346,10 +461,24 @@ public class MainActivity extends AppCompatActivity {
             displayFiles.add(new Folder("..", folderPath));
         }
 
-        FileAdapter adapter = new FileAdapter(this, displayFiles);
-        recycler.setAdapter(adapter);
+        fileAdapter = new FileAdapter(displayFiles);
+        fileAdapter.setOnItemClickListener(this);
+        recycler.setAdapter(fileAdapter);
 
         showWidgets(folder.getWidgetList());
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_CURRENT_FOLDER, currentFolder == null ? "~" : currentFolder);
+        outState.putString(STATE_UI_MODE, uiMode.name());
+    }
+
+    @Override
+    protected void onStop() {
+        revertPendingMove();
+        super.onStop();
     }
 
     private void showWidgets(WidgetList widgets) {
@@ -401,8 +530,89 @@ public class MainActivity extends AppCompatActivity {
         layout.setLayoutParams(layoutParams);
     }
 
-    public void setLongClickedID(int position) {
+    private void setMoveMode(boolean enabled) {
+        if (!enabled) {
+            revertPendingMove();
+        }
+        uiMode = enabled ? UiMode.MOVE : UiMode.NORMAL;
+        moveModeExit.setVisibility(enabled ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean isMoveModeActive() {
+        return uiMode == UiMode.MOVE;
+    }
+
+    private void beginPendingMove(int position) {
+        if (position == RecyclerView.NO_POSITION) return;
+        if (moveStartPosition != RecyclerView.NO_POSITION) return;
+        moveStartPosition = position;
+        moveTargetPosition = position;
+    }
+
+    private void finishPendingMove() {
+        if (moveStartPosition == RecyclerView.NO_POSITION || moveTargetPosition == RecyclerView.NO_POSITION) {
+            clearPendingMove();
+            return;
+        }
+        if (moveStartPosition == moveTargetPosition) {
+            clearPendingMove();
+            return;
+        }
+        if (!dataStorage.moveFile(currentFolder, moveStartPosition, moveTargetPosition)) {
+            revertPendingMove();
+            showMovePersistFailure();
+            return;
+        }
+        clearPendingMove();
+    }
+
+    private void revertPendingMove() {
+        if (fileAdapter != null
+                && moveStartPosition != RecyclerView.NO_POSITION
+                && moveTargetPosition != RecyclerView.NO_POSITION
+                && moveStartPosition != moveTargetPosition) {
+            fileAdapter.moveItem(moveTargetPosition, moveStartPosition);
+        }
+        clearPendingMove();
+    }
+
+    private void clearPendingMove() {
+        moveStartPosition = RecyclerView.NO_POSITION;
+        moveTargetPosition = RecyclerView.NO_POSITION;
+    }
+
+    @Override
+    public void onItemClicked(FileNode file) {
+        if (isMoveModeActive()) {
+            return;
+        }
+        if (file instanceof Folder) {
+            String fullPath = ((Folder) file).getFullPath();
+            if (file.getName().equals("..")) {
+                showFolder("..");
+                return;
+            }
+            showFolder(fullPath);
+        } else {
+            AppFile appFile = (AppFile) file;
+            LauncherApps launcher = (LauncherApps) getSystemService(Context.LAUNCHER_APPS_SERVICE);
+            List<LauncherActivityInfo> activities = launcher.getActivityList(appFile.getPackageName(), appFile.getUser());
+            ComponentName componentName = activities.get(0).getComponentName();
+            launcher.startMainActivity(componentName, appFile.getUser(), null, null);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> showFolder("~"), 1000);
+        }
+    }
+
+    @Override
+    public void onItemLongClicked(int position) {
+        if (isMoveModeActive()) {
+            return;
+        }
         this.longClickedId = position;
+    }
+
+    private void showMovePersistFailure() {
+        Toast.makeText(this, R.string.move_mode_persist_failed, Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -7,6 +7,9 @@
     <string name="action_delete">delete</string>
     <string name="action_move_up">move up</string>
     <string name="action_move_down">move down</string>
+    <string name="action_move_mode">drag mode</string>
+    <string name="move_mode_exit">X</string>
+    <string name="move_mode_persist_failed">couldn\'t save item order</string>
     <string name="search">search</string>
     <string name="action_change_icon">change icon</string>
     <string name="action_change_name">change name</string>

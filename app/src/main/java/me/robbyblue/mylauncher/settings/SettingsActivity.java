@@ -87,10 +87,13 @@ public class SettingsActivity extends AppCompatActivity {
     private void readJsonFromUri(Uri uri) {
         FileDataStorage fs = FileDataStorage.getInstanceAssumeExists();
 
-        try {
-            InputStream is = getContentResolver().openInputStream(uri);
+        try (InputStream is = getContentResolver().openInputStream(uri)) {
+            if (is == null) {
+                return;
+            }
             fs.importFromInputStream(is);
-        } catch (IOException e) {
+            setResult(RESULT_OK);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

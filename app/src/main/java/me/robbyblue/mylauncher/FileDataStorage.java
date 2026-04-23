@@ -272,12 +272,13 @@ public class FileDataStorage {
         return widgetElement;
     }
 
-    public void storeFilesStructure() {
+    public boolean storeFilesStructure() {
         try {
             JSONObject jsonData = getFileStructureAsJson();
-            writeFile(structureFile, jsonData.toString(2));
+            return writeFile(structureFile, jsonData.toString(2));
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -470,13 +471,22 @@ public class FileDataStorage {
         files.remove((folder).getFullPath());
     }
 
-    public void moveFile(String parentFolder, int initialIndex, int moveIndex) {
-        ArrayList<FileNode> contents = getFolderContents(parentFolder).getFiles();
-        if (moveIndex < 0 || moveIndex >= contents.size()) return;
+    public boolean moveFile(String parentFolder, int initialIndex, int moveIndex) {
+        Folder folder = getFolderContents(parentFolder);
+        if (folder == null) return false;
+        ArrayList<FileNode> contents = folder.getFiles();
+        if (initialIndex < 0 || initialIndex >= contents.size()) return false;
+        if (moveIndex < 0 || moveIndex >= contents.size()) return false;
+        if (initialIndex == moveIndex) return true;
         FileNode item = contents.get(initialIndex);
         contents.remove(initialIndex);
         contents.add(moveIndex, item);
-        storeFilesStructure();
+        if (!storeFilesStructure()) {
+            contents.remove(moveIndex);
+            contents.add(initialIndex, item);
+            return false;
+        }
+        return true;
     }
 
     public ArrayList<Folder> getFolders() {
@@ -523,14 +533,14 @@ public class FileDataStorage {
         }
     }
 
-    private void writeFile(File file, String content) {
-        if (file == null) return;
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+    private boolean writeFile(File file, String content) {
+        if (file == null) return true;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(content);
-            writer.close();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 

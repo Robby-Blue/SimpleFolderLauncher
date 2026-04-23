@@ -10,4 +10,7 @@
     <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings" />
+    <item
+        android:id="@+id/action_move_mode"
+        android:title="@string/action_move_mode" />
 </menu>

@@ -1,13 +1,7 @@
 package me.robbyblue.mylauncher.files;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.LauncherActivityInfo;
-import android.content.pm.LauncherApps;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,23 +13,29 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import me.robbyblue.mylauncher.MainActivity;
 import me.robbyblue.mylauncher.R;
 
 public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
 
-    MainActivity activity;
+    public interface OnItemClickListener {
+        void onItemClicked(FileNode file);
+        void onItemLongClicked(int position);
+    }
+
     ArrayList<FileNode> files;
+    OnItemClickListener itemClickListener;
     String textAlignment = null;
     int appTextColor;
     int folderTextColor;
     int backTextColor;
 
-    public FileAdapter(MainActivity activity, ArrayList<FileNode> files) {
-        this.activity = activity;
+    public FileAdapter(ArrayList<FileNode> files) {
         this.files = files;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
@@ -67,29 +67,19 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
         }
 
         holder.view.setOnClickListener((v) -> {
-            if (file instanceof Folder) {
-                String fullPath = ((Folder) file).getFullPath();
-                if (file.getName().equals("..")) {
-                    activity.showFolder("..");
-                    return;
-                }
-                activity.showFolder(fullPath);
-            } else {
-                AppFile appFile = (AppFile) file;
-                LauncherApps launcher = (LauncherApps) activity.getSystemService(Context.LAUNCHER_APPS_SERVICE);
-                List<LauncherActivityInfo> activities = launcher.getActivityList(appFile.getPackageName(), appFile.getUser());
-                ComponentName componentName = activities.get(0).getComponentName();
-                launcher.startMainActivity(componentName, appFile.getUser(), null, null);
-                new Handler(Looper.getMainLooper()).postDelayed(() -> activity.showFolder("~"), 1000);
-            }
+            if (itemClickListener == null) return;
+            itemClickListener.onItemClicked(file);
         });
 
         holder.view.setOnLongClickListener((v) -> {
-            if (file.getName().equals(".."))
+            int adapterPosition = holder.getAdapterPosition();
+            if (!canMove(adapterPosition))
                 return true; // consumed, dont show
 
             // remember the position and dont consume the click to show the context menu
-            activity.setLongClickedID(position);
+            if (itemClickListener != null) {
+                itemClickListener.onItemLongClicked(adapterPosition);
+            }
             return false;
         });
 
@@ -122,5 +112,20 @@ public class FileAdapter extends RecyclerView.Adapter<FileViewHolder> {
     @Override
     public int getItemCount() {
         return files.size();
+    }
+
+    public boolean moveItem(int from, int to) {
+        if (!canMove(from) || !canMove(to)) return false;
+        if (from == to) return true;
+        FileNode item = files.get(from);
+        files.remove(from);
+        files.add(to, item);
+        notifyItemMoved(from, to);
+        return true;
+    }
+
+    public boolean canMove(int position) {
+        if (position < 0 || position >= files.size()) return false;
+        return !files.get(position).getName().equals("..");
     }
 }

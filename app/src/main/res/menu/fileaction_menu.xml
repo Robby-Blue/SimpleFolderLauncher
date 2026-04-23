@@ -11,6 +11,9 @@
         android:id="@+id/action_change_name"
         android:title="@string/action_change_name" />
     <item
+        android:id="@+id/action_move_mode"
+        android:title="@string/action_move_mode" />
+    <item
         android:id="@+id/action_move_up"
         android:title="@string/action_move_up" />
     <item

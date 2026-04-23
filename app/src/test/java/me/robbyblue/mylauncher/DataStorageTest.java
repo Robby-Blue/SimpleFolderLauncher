@@ -1,6 +1,7 @@
 package me.robbyblue.mylauncher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -183,6 +184,32 @@ public class DataStorageTest {
         assertEquals(2, homeContents.getFiles().size());
         Folder subContents = fs.getFolderContents("~");
         assertEquals(2, subContents.getFiles().size());
+    }
+
+    @Test
+    public void valid_move_reorders_list() {
+        InputStream input = getClass().getResourceAsStream("/data_v0.json");
+        FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
+
+        assertTrue(fs.moveFile("~", 0, 2));
+
+        Folder contents = fs.getFolderContents("~");
+        assertEquals("App1", contents.getFiles().get(0).getName());
+        assertEquals("App2", contents.getFiles().get(1).getName());
+        assertEquals("Folder1", contents.getFiles().get(2).getName());
+    }
+
+    @Test
+    public void invalid_move_returns_false_and_preserves_order() {
+        InputStream input = getClass().getResourceAsStream("/data_v0.json");
+        FileDataStorage fs = FileDataStorage.getNewInstance(input, ApplicationProvider.getApplicationContext());
+
+        assertFalse(fs.moveFile("~", 0, 3));
+
+        Folder contents = fs.getFolderContents("~");
+        assertEquals("Folder1", contents.getFiles().get(0).getName());
+        assertEquals("App1", contents.getFiles().get(1).getName());
+        assertEquals("App2", contents.getFiles().get(2).getName());
     }
 
     public static InputStream editJson(InputStream input, Function<JSONObject, JSONObject> editor) {
